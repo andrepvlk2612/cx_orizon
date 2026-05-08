@@ -1,16 +1,13 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
-
   const GH_TOKEN = process.env.GH_TOKEN;
   const GH_API = 'https://api.github.com/repos/andrepvlk2612/cx_orizon/contents/dados.json';
-
   const { content, sha } = req.body;
   const body = {
     message: `Atualizacao - ${new Date().toLocaleString('pt-BR')}`,
     content,
     ...(sha && { sha })
   };
-
   const r = await fetch(GH_API, {
     method: 'PUT',
     headers: {
@@ -20,7 +17,6 @@ export default async function handler(req, res) {
     },
     body: JSON.stringify(body)
   });
-
   const data = await r.json();
   res.status(r.status).json(data);
 }
