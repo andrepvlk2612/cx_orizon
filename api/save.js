@@ -17,6 +17,7 @@ module.exports = async function handler(req, res) {
     Accept: "application/vnd.github+json",
   };
  
+  // GET — carrega os dados
   if (req.method === "GET") {
     const response = await fetch(apiUrl, { headers });
  
@@ -26,10 +27,10 @@ module.exports = async function handler(req, res) {
  
     if (!response.ok) {
       const errorData = await response.json();
-      return res.status(response.status).json({ 
-        error: "Erro ao buscar arquivo", 
+      return res.status(response.status).json({
+        error: "Erro ao buscar arquivo",
         status: response.status,
-        detalhe: errorData.message 
+        detalhe: errorData.message,
       });
     }
  
@@ -45,7 +46,30 @@ module.exports = async function handler(req, res) {
  
     return res.status(200).json({ content, sha: data.sha });
   }
-  
+ 
+  // PUT — salva os dados
+  if (req.method === "PUT") {
+    const { content, sha } = req.body;
+ 
+    let currentSha = sha;
+    if (!currentSha) {
+      const check = await fetch(apiUrl, { headers });
+      if (check.ok) {
+        const existing = await check.json();
+        currentSha = existing.sha;
+      }
+    }
+ 
+    const encoded = Buffer.from(JSON.stringify(content, null, 2)).toString(
+      "base64"
+    );
+ 
+    const body = {
+      message: "Atualização via painel CX",
+      content: encoded,
+      ...(currentSha && { sha: currentSha }),
+    };
+ 
     const response = await fetch(apiUrl, {
       method: "PUT",
       headers,
