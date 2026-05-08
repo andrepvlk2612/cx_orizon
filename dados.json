@@ -1,79 +1,6 @@
 {
   "items": [
     {
-      "cliente": "Amafresp",
-      "logoB64": "",
-      "problema": "InterrupÃÂÃÂ§ÃÂÃÂ£o do serviÃÂÃÂ§o Fature Premium devido problema na implantaÃÂÃÂ§ÃÂÃÂ£o de uma nova regra",
-      "head": "Daniel",
-      "headB64": "",
-      "impacto": 82,
-      "risco": "SatisfaÃÂÃÂ§ÃÂÃÂ£o",
-      "dataInicio": "2026-04-14",
-      "vencimento": "",
-      "aging": 0,
-      "link": ""
-    },
-    {
-      "cliente": "Bradesco SaÃÂÃÂºde",
-      "logoB64": "",
-      "problema": "ConcessÃÂÃÂ£o de acessos sistemas Bradesco (problema sistÃÂÃÂªmico do cliente interno e externo)",
-      "head": "RB",
-      "headB64": "",
-      "impacto": 60,
-      "risco": "SeguranÃÂÃÂ§a",
-      "dataInicio": "2026-04-25",
-      "vencimento": "",
-      "aging": 13
-    },
-    {
-      "cliente": "Orizon",
-      "logoB64": "",
-      "problema": "Garantir encontros mensais com o pÃÂÃÂºblico SÃÂÃÂªnior das Operadoras",
-      "head": "LC",
-      "headB64": "",
-      "impacto": 50,
-      "risco": "Imagem",
-      "dataInicio": "2026-02-03",
-      "vencimento": "2026-04-30",
-      "aging": 86
-    },
-    {
-      "cliente": "Bradesco Vida e Prev.",
-      "logoB64": "",
-      "problema": "MudanÃÂÃÂ§a de entrada dos comunicados BPV (vida) para portal Bradesco",
-      "head": "LC",
-      "headB64": "",
-      "impacto": 48,
-      "risco": "Operacional",
-      "dataInicio": "2026-04-14",
-      "vencimento": "2026-05-03",
-      "aging": 19
-    },
-    {
-      "cliente": "Orizon",
-      "logoB64": "",
-      "problema": "PublicaÃÂÃÂ§ÃÂÃÂ£o e operaÃÂÃÂ§ÃÂÃÂ£o assistida do novo autorizador de PBM",
-      "head": "LC",
-      "headB64": "",
-      "impacto": 70,
-      "risco": "Financeiro",
-      "dataInicio": "2026-04-18",
-      "vencimento": "2026-05-01",
-      "aging": 13
-    },
-    {
-      "cliente": "Life",
-      "logoB64": "",
-      "problema": "Impactos na operaÃÂÃÂ§ÃÂÃÂ£o apÃÂÃÂ³s a migraÃÂÃÂ§ÃÂÃÂ£o para a CPA",
-      "head": "MS",
-      "headB64": "",
-      "impacto": 42,
-      "risco": "Operacional",
-      "dataInicio": "2026-04-27",
-      "vencimento": "2026-05-15",
-      "aging": 18
-    },
-    {
       "cliente": "testeeeeeeeeee",
       "logoB64": "",
       "problema": "teste pc pessoal",
@@ -88,12 +15,12 @@
     }
   ],
   "categories": [
-    "SatisfaÃÂÃÂ§ÃÂÃÂ£o",
-    "SeguranÃÂÃÂ§a",
+    "SatisfaÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ£o",
+    "SeguranÃÂÃÂÃÂÃÂ§a",
     "Imagem",
     "Operacional",
     "Financeiro",
-    "JurÃÂÃÂ­dico"
+    "JurÃÂÃÂÃÂÃÂ­dico"
   ],
   "heads": [
     {
