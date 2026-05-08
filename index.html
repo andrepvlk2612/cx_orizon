@@ -1320,7 +1320,9 @@ async function saveToGitHub() {
     };
     const json = JSON.stringify(data, null, 2);
     const bytes = new TextEncoder().encode(json);
-    const content = btoa(String.fromCharCode(...bytes));
+    let binary = '';
+for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+const content = btoa(binary);
 
     // Busca SHA atual via rota segura
     let sha = null;
