@@ -6,7 +6,7 @@ export default async function handler(req, res) {
 
   const { content, sha } = req.body;
   const body = {
-    message: `Atualização - ${new Date().toLocaleString('pt-BR')}`,
+    message: `Atualizacao - ${new Date().toLocaleString('pt-BR')}`,
     content,
     ...(sha && { sha })
   };
