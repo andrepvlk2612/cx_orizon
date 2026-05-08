@@ -1321,8 +1321,8 @@ async function saveToGitHub() {
     const json = JSON.stringify(data, null, 2);
     const bytes = new TextEncoder().encode(json);
     let binary = '';
-for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-const content = btoa(binary);
+    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    const content = btoa(binary);
 
     // Busca SHA atual via rota segura
     let sha = null;
@@ -1336,8 +1336,10 @@ const content = btoa(binary);
     });
 
     if (!putRes.ok) {
-      const err = await putRes.json();
-      throw new Error(err.message || 'Erro desconhecido');
+      const text = await putRes.text();
+      let msg = 'Erro desconhecido';
+      try { msg = JSON.parse(text).message || msg; } catch(e) { msg = text.substring(0, 120); }
+      throw new Error(msg);
     }
     showSyncStatus('ok', 'Salvo no GitHub com sucesso!');
   } catch(e) {
