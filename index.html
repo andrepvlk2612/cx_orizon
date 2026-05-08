@@ -1325,7 +1325,7 @@ async function saveToGitHub() {
     // Get current SHA (needed to update existing file)
     let sha = null;
     const getRes = await fetch(GH_API, {
-      headers: { 'Authorization': `token ${GH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+      headers: { 'Authorization': `Bearer ${GH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
     });
     if (getRes.ok) { const j = await getRes.json(); sha = j.sha; }
 
