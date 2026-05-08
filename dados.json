@@ -4,13 +4,14 @@
       "cliente": "Amafresp",
       "logoB64": "",
       "problema": "Interrupção do serviço Fature Premium devido problema na implantação de uma nova regra",
-      "head": "MS",
+      "head": "Daniel",
       "headB64": "",
       "impacto": 82,
       "risco": "Satisfação",
       "dataInicio": "2026-04-14",
       "vencimento": "",
-      "aging": 24
+      "aging": 0,
+      "link": ""
     },
     {
       "cliente": "Bradesco Saúde",
