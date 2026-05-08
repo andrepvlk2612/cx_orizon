@@ -1315,7 +1315,7 @@ async function saveToGitHub() {
       items, categories, heads, clientes,
       headerLogo: localStorage.getItem('cx-header-logo') || ''
     };
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+    const data = JSON.parse(decodeURIComponent(escape(atob(json.content.replace(/\n/g,'')))));
 
     // Busca SHA atual via rota segura
     let sha = null;
