@@ -1437,9 +1437,7 @@ async function loadFromGitHub() {
     if (data.categories) { categories = data.categories; localStorage.setItem('cx-categories', JSON.stringify(categories)); }
     if (data.heads)      { heads      = data.heads;      localStorage.setItem('cx-heads',      JSON.stringify(heads)); }
     if (data.clientes)   { clientes   = data.clientes;   localStorage.setItem('cx-clientes',   JSON.stringify(clientes)); }
-    if (data.headerLogo) { localStorage.setItem('cx-header-logo', data.headerLogo); applyHeaderLogo(data.headerLogo);
-  }
-}
+    if (data.headerLogo) { localStorage.setItem('cx-header-logo', data.headerLogo); applyHeaderLogo(data.headerLogo); }
     rebuildSelects(); rebuildClienteSelect(); rebuildHeadDatalist(); renderTable();
     showSyncStatus('ok', 'Dados carregados');
   } catch(e) {
