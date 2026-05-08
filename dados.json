@@ -3,24 +3,24 @@
     {
       "cliente": "Amafresp",
       "logoB64": "",
-      "problema": "InterrupÃ§Ã£o do serviÃ§o Fature Premium devido problema na implantaÃ§Ã£o de uma nova regra",
+      "problema": "InterrupÃÂ§ÃÂ£o do serviÃÂ§o Fature Premium devido problema na implantaÃÂ§ÃÂ£o de uma nova regra",
       "head": "Daniel",
       "headB64": "",
       "impacto": 82,
-      "risco": "SatisfaÃ§Ã£o",
+      "risco": "SatisfaÃÂ§ÃÂ£o",
       "dataInicio": "2026-04-14",
       "vencimento": "",
       "aging": 0,
       "link": ""
     },
     {
-      "cliente": "Bradesco SaÃºde",
+      "cliente": "Bradesco SaÃÂºde",
       "logoB64": "",
-      "problema": "ConcessÃ£o de acessos sistemas Bradesco (problema sistÃªmico do cliente interno e externo)",
+      "problema": "ConcessÃÂ£o de acessos sistemas Bradesco (problema sistÃÂªmico do cliente interno e externo)",
       "head": "RB",
       "headB64": "",
       "impacto": 60,
-      "risco": "SeguranÃ§a",
+      "risco": "SeguranÃÂ§a",
       "dataInicio": "2026-04-25",
       "vencimento": "",
       "aging": 13
@@ -28,7 +28,7 @@
     {
       "cliente": "Orizon",
       "logoB64": "",
-      "problema": "Garantir encontros mensais com o pÃºblico SÃªnior das Operadoras",
+      "problema": "Garantir encontros mensais com o pÃÂºblico SÃÂªnior das Operadoras",
       "head": "LC",
       "headB64": "",
       "impacto": 50,
@@ -40,7 +40,7 @@
     {
       "cliente": "Bradesco Vida e Prev.",
       "logoB64": "",
-      "problema": "MudanÃ§a de entrada dos comunicados BPV (vida) para portal Bradesco",
+      "problema": "MudanÃÂ§a de entrada dos comunicados BPV (vida) para portal Bradesco",
       "head": "LC",
       "headB64": "",
       "impacto": 48,
@@ -52,7 +52,7 @@
     {
       "cliente": "Orizon",
       "logoB64": "",
-      "problema": "PublicaÃ§Ã£o e operaÃ§Ã£o assistida do novo autorizador de PBM",
+      "problema": "PublicaÃÂ§ÃÂ£o e operaÃÂ§ÃÂ£o assistida do novo autorizador de PBM",
       "head": "LC",
       "headB64": "",
       "impacto": 70,
@@ -64,7 +64,7 @@
     {
       "cliente": "Life",
       "logoB64": "",
-      "problema": "Impactos na operaÃ§Ã£o apÃ³s a migraÃ§Ã£o para a CPA",
+      "problema": "Impactos na operaÃÂ§ÃÂ£o apÃÂ³s a migraÃÂ§ÃÂ£o para a CPA",
       "head": "MS",
       "headB64": "",
       "impacto": 42,
@@ -72,15 +72,28 @@
       "dataInicio": "2026-04-27",
       "vencimento": "2026-05-15",
       "aging": 18
+    },
+    {
+      "cliente": "testeeeeeeeeee",
+      "logoB64": "",
+      "problema": "teste pc pessoal",
+      "head": "",
+      "headB64": "",
+      "impacto": 0,
+      "risco": "",
+      "dataInicio": "",
+      "vencimento": "",
+      "aging": 0,
+      "link": ""
     }
   ],
   "categories": [
-    "SatisfaÃ§Ã£o",
-    "SeguranÃ§a",
+    "SatisfaÃÂ§ÃÂ£o",
+    "SeguranÃÂ§a",
     "Imagem",
     "Operacional",
     "Financeiro",
-    "JurÃ­dico"
+    "JurÃÂ­dico"
   ],
   "heads": [
     {
