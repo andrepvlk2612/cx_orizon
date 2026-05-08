@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orizon CX – Pontos de Atenção</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --border: #e2e6ea;
+    --text: #1a1d23;
+    --muted: #6b7280;
+    --header-bg: #1A2540;
+    --orizon-green: #00b37e;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* Header */
+  header { background: var(--header-bg); padding: 18px 36px; display: flex; align-items: center; justify-content: space-between; gap: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.18); }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .orizon-logo-wrap { display: flex; align-items: center; cursor: pointer; position: relative; gap: 8px; }
+  .orizon-logo-wrap img { height: 36px; transition: opacity 0.2s; }
+  .orizon-logo-wrap:hover img { opacity: 0.8; }
+  .header-logo-custom { height: 36px; object-fit: contain; max-width: 140px; }
+  .header-title { color: #fff; }
+  .header-title h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+  .header-title p  { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .badge-date { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; font-size: 12px; font-family: 'DM Mono', monospace; padding: 5px 12px; border-radius: 20px; }
+  .btn-add { background: var(--orizon-green); color: #fff; border: none; padding: 8px 18px; border-radius: 8px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .btn-add:hover { background: #00966a; }
+  .btn-export { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #e2e8f0; padding: 8px 16px; border-radius: 8px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-export:hover { background: rgba(255,255,255,0.22); color: #fff; }
+  .sync-status { font-size: 12px; font-weight: 600; color: #e2e8f0; white-space: nowrap; transition: all 0.3s; }
+  .sync-ok    { color: #86efac; }
+  .sync-error { color: #fca5a5; }
+  .sync-saving, .sync-loading { color: #fde68a; }
+
+  /* Toolbar */
+  .toolbar { display: flex; align-items: center; gap: 12px; padding: 16px 36px; background: #fff; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .toolbar label { font-size: 12px; color: var(--muted); margin-right: 4px; }
+  .toolbar select, .toolbar input[type="text"] { font-family: 'Sora', sans-serif; font-size: 13px; border: 1px solid var(--border); border-radius: 7px; padding: 6px 10px; background: #f8fafc; outline: none; color: var(--text); }
+  .toolbar select:focus, .toolbar input:focus { border-color: var(--orizon-green); }
+  .count-badge { margin-left: auto; background: #f1f5f9; border-radius: 20px; font-size: 12px; color: var(--muted); padding: 4px 12px; }
+  .count-badge span { font-weight: 700; color: var(--text); }
+
+  /* Table */
+  .table-wrap { padding: 20px 36px 40px; overflow-x: auto; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  thead tr { background: #f8fafc; border-bottom: 2px solid var(--border); }
+  th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); padding: 12px 16px; text-align: left; white-space: nowrap; }
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--text); background: #f1f5f9; }
+  th.sort-asc, th.sort-desc { color: var(--header-bg); }
+  th .sort-icon { display: inline-block; margin-left: 4px; font-size: 10px; opacity: 0.4; }
+  th.sort-asc .sort-icon, th.sort-desc .sort-icon { opacity: 1; }
+  th:first-child { border-radius: var(--radius) 0 0 0; }
+  th:last-child  { border-radius: 0 var(--radius) 0 0; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; animation: fadeIn 0.3s ease both; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f8fafc; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  td { padding: 14px 16px; font-size: 13px; vertical-align: middle; }
+
+  /* Logo cell */
+  .logo-wrap { width: 110px; height: 56px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid var(--border); border-radius: 7px; padding: 6px 10px; overflow: hidden; }
+  .logo-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .logo-fallback { font-size: 10px; font-weight: 700; color: var(--muted); text-align: center; line-height: 1.2; }
+
+  /* Avatar */
+  .avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0; overflow: hidden; border: 2px solid rgba(255,255,255,0.4); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Problema */
+  .problema-text { max-width: 280px; font-size: 12.5px; line-height: 1.5; color: #374151; }
+
+  /* Bars */
+  .bar-container { display: flex; align-items: center; gap: 6px; min-width: 140px; }
+  .bar-track { flex: 1; height: 10px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+  .bar-fill.low      { background: linear-gradient(90deg, #facc15, #fbbf24); }
+  .bar-fill.medium   { background: linear-gradient(90deg, #facc15, #f97316); }
+  .bar-fill.high     { background: linear-gradient(90deg, #f97316, #dc2626); }
+  .bar-fill.critical { background: linear-gradient(90deg, #dc2626, #991b1b); }
+
+  /* Risco */
+  .risco-tag { display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+
+  /* Vencimento */
+  .venc-cell { min-width: 160px; }
+  .venc-bar-track { height: 6px; background: #f1f5f9; border-radius: 99px; overflow: hidden; margin-bottom: 2px; }
+  .venc-bar-fill { height: 100%; border-radius: 99px; }
+  .venc-bar-fill.overdue { background: #dc2626; width: 100%; }
+  .venc-bar-fill.warning { background: linear-gradient(90deg, #f97316, #dc2626); }
+  .venc-bar-fill.ok      { background: #4ade80; }
+  .venc-date { font-size: 13px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); }
+
+  /* Aging */
+  .aging-cell { text-align: center; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; }
+  .aging-cell.red    { color: #dc2626; }
+  .aging-cell.orange { color: #f97316; }
+  .aging-cell.green  { color: #16a34a; }
+
+  /* Actions */
+  .action-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 12px; color: var(--muted); transition: all 0.15s; }
+  .action-btn:hover      { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
+  .action-btn.edit:hover { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
+  .action-btn.move:hover { background: #f0fdf4; border-color: #86efac; color: #15803d; }
+  .action-btn:disabled   { opacity: 0.25; cursor: default; pointer-events: none; }
+
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 16px; padding: 28px 32px; width: 600px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: modalIn 0.25s ease; }
+  @keyframes modalIn { from { transform: scale(0.93); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 20px; color: var(--header-bg); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-field { display: flex; flex-direction: column; gap: 5px; }
+  .form-field.full { grid-column: 1 / -1; }
+  .form-field label { font-size: 11.5px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+  .form-field input, .form-field select, .form-field textarea {
+    font-family: 'Sora', sans-serif; font-size: 13px; border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 8px 12px; background: #f8fafc; color: var(--text); outline: none; transition: border 0.15s;
+  }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: var(--orizon-green); background: #fff; }
+  .form-field textarea { resize: vertical; min-height: 72px; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+  .btn-cancel { background: #f1f5f9; border: none; border-radius: 8px; padding: 9px 20px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; }
+  .btn-save   { background: var(--header-bg); border: none; border-radius: 8px; padding: 9px 20px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; transition: background 0.2s; }
+  .btn-save:hover { background: #2d3f6e; }
+
+  /* ── Image upload boxes ── */
+  .img-upload-box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 10px 8px;
+    cursor: pointer;
+    background: #f8fafc;
+    transition: border-color 0.2s, background 0.2s;
+    min-height: 78px;
+    text-align: center;
+    overflow: hidden;
+    user-select: none;
+  }
+  .img-upload-box:hover       { border-color: var(--orizon-green); background: #f0fdf8; }
+  .img-upload-box.has-image   { border-style: solid; border-color: var(--orizon-green); background: #fff; }
+  .upload-icon  { font-size: 22px; line-height: 1; }
+  .upload-label { font-size: 11.5px; color: var(--muted); }
+  .upload-sub   { font-size: 10px; color: #bbb; }
+
+  /* Logo: landscape preview */
+  .logo-upload-box .img-preview { max-height: 48px; max-width: 130px; object-fit: contain; border-radius: 4px; }
+
+  /* Head: circular preview */
+  .head-upload-box .img-preview { width: 52px; height: 52px; object-fit: cover; border-radius: 50%; border: 2px solid var(--orizon-green); }
+
+  .remove-img-btn {
+    position: absolute; top: 5px; right: 5px;
+    background: #fee2e2; border: none; border-radius: 50%;
+    width: 22px; height: 22px; cursor: pointer;
+    font-size: 11px; color: #dc2626;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1; transition: background 0.15s;
+  }
+  .remove-img-btn:hover { background: #fecaca; }
+
+  /* ── Save Instructions Modal ── */
+  .save-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); z-index: 200; align-items: center; justify-content: center; }
+  .save-modal-overlay.open { display: flex; }
+  .save-modal { background: #fff; border-radius: 16px; padding: 32px; width: 480px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: modalIn 0.25s ease; }
+  .save-modal h2 { font-size: 17px; font-weight: 700; color: var(--header-bg); margin-bottom: 6px; }
+  .save-modal .save-subtitle { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+  .save-step { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px; }
+  .save-step-num { background: var(--header-bg); color: #fff; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .save-step-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .save-step-text strong { color: var(--header-bg); }
+  .save-kbd { display: inline-block; background: #f1f5f9; border: 1.5px solid #cbd5e1; border-radius: 5px; padding: 1px 7px; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; color: var(--text); }
+  .save-warning { background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 10px; padding: 12px 16px; margin: 20px 0; font-size: 12.5px; color: #92400e; line-height: 1.6; }
+  .save-warning strong { color: #c2410c; }
+  .save-filename { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; }
+  .save-filename label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; display: block; margin-bottom: 6px; }
+  .save-filename-value { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; color: #166534; word-break: break-all; }
+  .save-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+  .btn-open-tab { background: var(--header-bg); border: none; border-radius: 8px; padding: 10px 22px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; transition: background 0.2s; }
+  .btn-open-tab:hover { background: #2d3f6e; }
+  .btn-save-cancel { background: #f1f5f9; border: none; border-radius: 8px; padding: 10px 18px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+
+  /* Legend */
+  .legend { display: flex; align-items: center; gap: 16px; padding: 12px 36px 0; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--muted); }
+  .legend-dot  { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* Tooltip nativo via title já funciona; reforço visual no avatar */
+  .avatar { cursor: default; }
+  .avatar:hover { transform: scale(1.1); transition: transform 0.15s; }
+
+  @media (max-width: 700px) {
+    header { padding: 14px 16px; flex-direction: column; align-items: flex-start; }
+    .table-wrap { padding: 12px 10px 30px; }
+    .toolbar { padding: 12px 10px; }
+    .legend  { padding: 12px 10px 0; }
+    .import-hint { margin: 12px 10px 0; }
+  }
+
+  /* ── Settings Page ── */
+  #settingsPage { display: none; min-height: 100vh; }
+  #settingsPage.open { display: block; }
+  #mainPage { display: block; }
+  #mainPage.hidden { display: none; }
+  #mainPageContent { display: block; }
+  #mainPageContent.hidden { display: none; }
+  .settings-header { background: var(--header-bg); padding: 18px 36px; display: flex; align-items: center; gap: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.18); }
+  .settings-header-info h1 { color: #fff; font-size: 18px; font-weight: 600; }
+  .settings-header-info p  { color: #94a3b8; font-size: 12px; margin-top: 2px; }
+  .btn-back { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 7px 14px; border-radius: 8px; font-family: 'Sora',sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 6px; }
+  .btn-back:hover { background: rgba(255,255,255,0.2); }
+  .settings-body { max-width: 860px; margin: 32px auto; padding: 0 24px 60px; }
+  .settings-tabs { display: flex; gap: 4px; background: #fff; border-radius: 12px; padding: 6px; box-shadow: var(--shadow); margin-bottom: 24px; }
+  .settings-tab { flex: 1; padding: 10px 16px; border: none; border-radius: 8px; font-family: 'Sora',sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; background: transparent; color: var(--muted); transition: all 0.18s; }
+  .settings-tab.active { background: var(--header-bg); color: #fff; }
+  .settings-tab:hover:not(.active) { background: #f1f5f9; color: var(--text); }
+  .settings-panel { display: none; }
+  .settings-panel.active { display: block; }
+  .settings-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; }
+  .settings-card + .settings-card { margin-top: 16px; }
+  .settings-card h3 { font-size: 14px; font-weight: 700; color: var(--header-bg); margin-bottom: 16px; }
+  .settings-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; margin-bottom: 16px; padding-right: 4px; }
+  .settings-row { display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
+  .settings-row-info { flex: 1; display: flex; align-items: center; gap: 10px; }
+  .settings-row-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); flex-shrink: 0; }
+  .settings-row-logo  { width: 64px; height: 36px; object-fit: contain; border: 1px solid var(--border); border-radius: 5px; background: #fff; padding: 3px; flex-shrink: 0; }
+  .settings-row-initials { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .settings-row-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .settings-row-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .settings-add-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+  .settings-add-row .sf { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 140px; }
+  .settings-add-row .sf label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+  .settings-add-row input { font-family: 'Sora',sans-serif; font-size: 13px; border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 12px; background: #f8fafc; color: var(--text); outline: none; width: 100%; }
+  .settings-add-row input:focus { border-color: var(--orizon-green); background: #fff; }
+  .btn-settings-add { background: var(--orizon-green); color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-family: 'Sora',sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.2s; align-self: flex-end; }
+  .btn-settings-add:hover { background: #00966a; }
+  .btn-settings-del { background: #fee2e2; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; color: #dc2626; font-size: 12px; font-weight: 600; white-space: nowrap; transition: background 0.15s; }
+  .btn-settings-del:hover { background: #fecaca; }
+  .mini-upload-btn { border: 1.5px dashed var(--border); border-radius: 8px; padding: 6px 12px; font-family: 'Sora',sans-serif; font-size: 12px; color: var(--muted); cursor: pointer; background: #f8fafc; transition: border-color 0.2s; white-space: nowrap; display: inline-block; }
+  .mini-upload-btn:hover { border-color: var(--orizon-green); color: var(--orizon-green); }
+  .mini-preview { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--orizon-green); display: none; }
+  .mini-preview-logo { width: 64px; height: 36px; border-radius: 6px; object-fit: contain; border: 1px solid var(--orizon-green); background: #fff; padding: 2px; display: none; }
+</style>
+</head>
+<body>
+
+<!-- MAIN PAGE -->
+<div id="mainPage">
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <div class="orizon-logo-wrap" onclick="document.getElementById('fHeaderLogo').click()" title="Clique para trocar o logo">
+      <img id="headerLogoImg" src="https://www.orizon.com.br/wp-content/uploads/2021/03/logo-orizon.svg"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block';" alt="Logo">
+      <span id="headerLogoText" style="display:none;font-weight:800;font-size:15px;color:#fff;letter-spacing:-0.5px;">LOGO</span>
+    </div>
+    <input type="file" id="fHeaderLogo" accept="image/*" style="display:none;" onchange="handleHeaderLogo(event)">
+    <div class="header-title">
+      <h1>Painel de Pontos de Atenção</h1>
+      <p>Customer Experience · Visão Executiva</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="badge-date" id="dateDisplay"></div>
+    <span class="sync-status" id="syncStatus"></span>
+    <button class="btn-export" onclick="exportSnapshot()" title="Salvar alterações no GitHub">💾 Salvar</button>
+    <button class="btn-add" onclick="openModal()">+ Adicionar</button>
+  </div>
+</header>
+
+
+<div class="legend">
+  <span style="font-size:11.5px;font-weight:600;color:#374151;margin-right:4px;">Impacto:</span>
+  <div class="legend-item"><div class="legend-dot" style="background:#facc15"></div> Baixo</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div> Médio</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div> Alto</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#991b1b"></div> Crítico</div>
+  <span style="font-size:11.5px;font-weight:600;color:#374151;margin-left:52px;margin-right:4px;">Vencimento:</span>
+  <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div> Vencido</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div> Próximo</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div> Ok</div>
+</div>
+
+<div class="toolbar">
+  <label>Filtrar risco:</label>
+  <select id="filterRisco" onchange="renderTable()">
+    <option value="">Todos</option>
+  </select>
+
+  <label>Buscar:</label>
+  <input type="text" id="filterSearch" placeholder="Cliente ou problema..." oninput="renderTable()">
+ <button class="btn-add" style="padding:6px 12px;font-size:12px;background:#64748b;" onclick="openSettings()" title="Configurações">⚙ Configurações</button>
+  <div class="count-badge">Exibindo <span id="countDisplay">0</span> registros</div>
+</div>
+
+
+
+<!-- MODAL CATEGORIAS (mantido para compatibilidade, não exibido) -->
+<div id="catModalOverlay" style="display:none;">
+  <div>
+    <div id="catList"></div>
+    <input type="text" id="newCatName">
+  </div>
+</div>
+
+<!-- SAVE INSTRUCTIONS MODAL -->
+<div class="save-modal-overlay" id="saveModalOverlay">
+  <div class="save-modal">
+    <h2>💾 Salvar painel</h2>
+    <p class="save-subtitle">Siga os passos abaixo para salvar uma cópia com todos os seus dados e imagens.</p>
+
+    <div class="save-step">
+      <div class="save-step-num">1</div>
+      <div class="save-step-text">Clique em <strong>"Abrir para salvar"</strong> abaixo — uma nova aba será aberta com o painel completo.</div>
+    </div>
+    <div class="save-step">
+      <div class="save-step-num">2</div>
+      <div class="save-step-text">Na nova aba, pressione <span class="save-kbd">Ctrl</span> + <span class="save-kbd">S</span> para salvar o arquivo no seu computador.</div>
+    </div>
+    <div class="save-step">
+      <div class="save-step-num">3</div>
+      <div class="save-step-text">Use o nome sugerido abaixo (ou o que preferir) e salve em uma pasta de fácil acesso.</div>
+    </div>
+
+    <div class="save-filename">
+      <label>💡 Sugestão de nome para o arquivo</label>
+      <div class="save-filename-value" id="suggestedFilename"></div>
+    </div>
+
+    <div class="save-warning">
+      ✅ <strong>Nenhuma pasta adicional é gerada</strong> — todas as imagens ficam embutidas dentro do próprio arquivo <code>.html</code>, então basta compartilhar esse único arquivo. <br><br>
+      📁 Salve em uma <strong>pasta compartilhada</strong> (ex: OneDrive, Teams) para que toda a equipe acesse sempre a versão mais recente. Arquivos de versões anteriores podem ser descartados.
+    </div>
+
+    <div class="save-modal-actions">
+      <button class="btn-save-cancel" onclick="closeSaveModal()">Cancelar</button>
+      <button class="btn-open-tab" onclick="doExport()">Abrir para salvar →</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /mainPage - temporarily closed here, re-opened below -->
+
+<!-- SETTINGS PAGE -->
+<div id="settingsPage">
+  <div class="settings-header">
+    <button class="btn-back" onclick="closeSettings()">← Voltar</button>
+    <div class="settings-header-info">
+      <h1>⚙️ Configurações</h1>
+      <p>Gerencie categorias, heads e clientes</p>
+    </div>
+  </div>
+  <div class="settings-body">
+    <div class="settings-tabs">
+      <button class="settings-tab active" onclick="switchTab('tabRisco')">🏷️ Categorias de Risco</button>
+      <button class="settings-tab" onclick="switchTab('tabHeads')">👤 Heads</button>
+      <button class="settings-tab" onclick="switchTab('tabClientes')">🏢 Clientes</button>
+    </div>
+
+    <!-- TAB: Categorias de Risco -->
+    <div class="settings-panel active" id="tabRisco">
+      <div class="settings-card">
+        <h3>Categorias de Risco</h3>
+        <div class="settings-list" id="sRiscoList"></div>
+        <div class="settings-add-row">
+          <div class="sf">
+            <label>Nova categoria</label>
+            <input type="text" id="sNewCatName" placeholder="Ex: Regulatório" onkeydown="if(event.key==='Enter')addCategorySettings()">
+          </div>
+          <button class="btn-settings-add" onclick="addCategorySettings()">+ Adicionar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Heads -->
+    <div class="settings-panel" id="tabHeads">
+      <div class="settings-card">
+        <h3>Heads cadastrados</h3>
+        <div class="settings-list" id="sHeadList"></div>
+        <div class="settings-add-row" style="align-items:flex-end;gap:10px;flex-wrap:wrap;">
+          <div class="sf">
+            <label>Nome do Head</label>
+            <input type="text" id="sNewHeadName" placeholder="Ex: Ricardo Borges" maxlength="60">
+          </div>
+          <div class="sf" style="flex:0 0 auto;">
+            <label>Foto (opcional)</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <img id="sHeadPreview" class="mini-preview" src="" alt="">
+              <label class="mini-upload-btn" for="sHeadFile">📷 Escolher</label>
+              <input type="file" id="sHeadFile" accept="image/*" style="display:none;" onchange="previewSettingsImg(event,'sHeadPreview','sHeadB64')">
+            </div>
+          </div>
+          <input type="hidden" id="sHeadB64" value="">
+          <button class="btn-settings-add" onclick="addHead()">+ Adicionar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Clientes -->
+    <div class="settings-panel" id="tabClientes">
+      <div class="settings-card">
+        <h3>Clientes cadastrados</h3>
+        <div class="settings-list" id="sClienteList"></div>
+        <div class="settings-add-row" style="align-items:flex-end;gap:10px;flex-wrap:wrap;">
+          <div class="sf">
+            <label>Nome do Cliente</label>
+            <input type="text" id="sNewClienteName" placeholder="Ex: Bradesco Saúde">
+          </div>
+          <div class="sf" style="flex:0 0 auto;">
+            <label>Logo (opcional)</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <img id="sClientePreview" class="mini-preview-logo" src="" alt="">
+              <label class="mini-upload-btn" for="sClienteFile">🖼️ Escolher</label>
+              <input type="file" id="sClienteFile" accept="image/*" style="display:none;" onchange="previewSettingsImg(event,'sClientePreview','sClienteB64')">
+            </div>
+          </div>
+          <input type="hidden" id="sClienteB64" value="">
+          <button class="btn-settings-add" onclick="addCliente()">+ Adicionar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- mainPage continues: legend + table -->
+<div id="mainPageContent">
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="sortable" onclick="sortBy('cliente')" id="th-cliente">Cliente<span class="sort-icon">⇅</span></th>
+        <th>Problema</th>
+        <th class="sortable" onclick="sortBy('head')" id="th-head">Head<span class="sort-icon">⇅</span></th>
+        <th class="sortable" onclick="sortBy('impacto')" id="th-impacto">Impacto no Cliente<span class="sort-icon">⇅</span></th>
+        <th class="sortable" onclick="sortBy('risco')" id="th-risco">Risco<span class="sort-icon">⇅</span></th>
+        <th class="sortable" onclick="sortBy('vencimento')" id="th-vencimento">Vencimento do Prazo<span class="sort-icon">⇅</span></th>
+        <th class="sortable" onclick="sortBy('aging')" id="th-aging">Aging<span class="sort-icon">⇅</span></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="icon">📋</div>
+    <p>Nenhum ponto de atenção cadastrado ainda.<br>Clique em <strong>+ Adicionar</strong> para começar.</p>
+  </div>
+</div>
+</div><!-- /mainPageContent -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">➕ Novo Ponto de Atenção</h2>
+    <div class="form-grid">
+
+      <!-- Cliente -->
+      <div class="form-field">
+        <label>Cliente</label>
+        <input type="text" id="fCliente" placeholder="Ex: Bradesco Saúde" onblur="autoFillClienteLogo()">
+      </div>
+
+      <!-- Logo upload -->
+      <div class="form-field">
+        <label>Logo do Cliente</label>
+        <div class="img-upload-box logo-upload-box" id="logoBox"
+             onclick="document.getElementById('fLogoFile').click()">
+          <img id="logoPreview" class="img-preview" src="" style="display:none;" alt="logo">
+          <div id="logoPlaceholder" style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+            <span class="upload-icon">🖼️</span>
+            <span class="upload-label">Clique para enviar</span>
+            <span class="upload-sub">PNG · JPG · SVG · WEBP</span>
+          </div>
+          <button type="button" class="remove-img-btn" id="logoRemoveBtn"
+                  style="display:none;" onclick="removeImg(event,'logo')">✕</button>
+        </div>
+        <input type="file" id="fLogoFile" accept="image/*" style="display:none;"
+               onchange="handleImg(event,'logo')">
+      </div>
+
+      <!-- Problema -->
+      <div class="form-field full">
+        <label>Qual problema queremos resolver?</label>
+        <textarea id="fProblema" placeholder="Descreva o ponto de atenção..."></textarea>
+      </div>
+
+      <!-- Head nome -->
+      <div class="form-field">
+        <label>Head responsável</label>
+        <input type="text" id="fHead" placeholder="Ex: Ricardo Borges" maxlength="60" list="headDatalist" onblur="autoFillHeadPhoto()">
+        <datalist id="headDatalist"></datalist>
+      </div>
+
+      <!-- Head foto upload -->
+      <div class="form-field">
+        <label>Foto do Head</label>
+        <div class="img-upload-box head-upload-box" id="headBox"
+             onclick="document.getElementById('fHeadFile').click()">
+          <img id="headPreview" class="img-preview" src="" style="display:none;" alt="head">
+          <div id="headPlaceholder" style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+            <span class="upload-icon">👤</span>
+            <span class="upload-label">Clique para enviar</span>
+            <span class="upload-sub">PNG · JPG · WEBP</span>
+          </div>
+          <button type="button" class="remove-img-btn" id="headRemoveBtn"
+                  style="display:none;" onclick="removeImg(event,'head')">✕</button>
+        </div>
+        <input type="file" id="fHeadFile" accept="image/*" style="display:none;"
+               onchange="handleImg(event,'head')">
+      </div>
+
+      <!-- Impacto -->
+      <div class="form-field">
+        <label>Impacto no Cliente (0–100)</label>
+        <input type="number" id="fImpacto" min="0" max="100" placeholder="Ex: 75">
+      </div>
+
+      <!-- Risco -->
+      <div class="form-field">
+        <label>Risco</label>
+        <select id="fRisco"></select>
+      </div>
+
+      <!-- Data início -->
+      <div class="form-field">
+        <label>Data Início</label>
+        <input type="date" id="fDataInicio" onchange="calcAging()">
+      </div>
+
+      <!-- Vencimento -->
+      <div class="form-field">
+        <label>Vencimento do Prazo</label>
+        <input type="date" id="fVencimento" onchange="calcAging()">
+      </div>
+
+      <!-- Aging calculado -->
+      <div class="form-field full">
+        <label>Aging (dias em aberto — calculado automaticamente)</label>
+        <input type="text" id="fAging" readonly placeholder="Preencha as datas acima"
+               style="background:#f1f5f9;color:var(--muted);cursor:default;font-family:'DM Mono',monospace;font-weight:700;">
+      </div>
+
+      <!-- Link -->
+      <div class="form-field full">
+        <label>Link (opcional)</label>
+        <input type="text" id="fLink" placeholder="Ex: google.com ou https://..."></input>
+      </div>
+
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save"   onclick="saveItem()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Temporary image state (while modal is open) ──
+let tempLogoB64 = null; // null = unchanged; '' = cleared; 'data:...' = new upload
+let tempHeadB64 = null;
+
+function handleImg(ev, type) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => applyImg(type, e.target.result);
+  reader.readAsDataURL(file);
+  ev.target.value = ''; // allow re-selecting same file
+}
+
+function applyImg(type, b64) {
+  if (type === 'logo') {
+    tempLogoB64 = b64;
+    document.getElementById('logoPreview').src           = b64;
+    document.getElementById('logoPreview').style.display = 'block';
+    document.getElementById('logoPlaceholder').style.display = 'none';
+    document.getElementById('logoRemoveBtn').style.display   = 'flex';
+    document.getElementById('logoBox').classList.add('has-image');
+  } else {
+    tempHeadB64 = b64;
+    document.getElementById('headPreview').src           = b64;
+    document.getElementById('headPreview').style.display = 'block';
+    document.getElementById('headPlaceholder').style.display = 'none';
+    document.getElementById('headRemoveBtn').style.display   = 'flex';
+    document.getElementById('headBox').classList.add('has-image');
+  }
+}
+
+function removeImg(ev, type) {
+  ev.stopPropagation();
+  clearImg(type);
+  if (type === 'logo') tempLogoB64 = '';
+  else                 tempHeadB64 = '';
+}
+
+function clearImg(type) {
+  if (type === 'logo') {
+    document.getElementById('logoPreview').src           = '';
+    document.getElementById('logoPreview').style.display = 'none';
+    document.getElementById('logoPlaceholder').style.display = 'flex';
+    document.getElementById('logoRemoveBtn').style.display   = 'none';
+    document.getElementById('logoBox').classList.remove('has-image');
+  } else {
+    document.getElementById('headPreview').src           = '';
+    document.getElementById('headPreview').style.display = 'none';
+    document.getElementById('headPlaceholder').style.display = 'flex';
+    document.getElementById('headRemoveBtn').style.display   = 'none';
+    document.getElementById('headBox').classList.remove('has-image');
+  }
+}
+
+function loadImg(type, b64) {
+  if (b64) applyImg(type, b64);
+  else     clearImg(type);
+}
+
+// ── Aging auto-calculation ──
+function calcAgingValue() {
+  const ini = document.getElementById('fDataInicio').value;
+  const ven = document.getElementById('fVencimento').value;
+  if (!ini || !ven) return 0;
+  const d1 = new Date(ini + 'T00:00:00');
+  const d2 = new Date(ven + 'T00:00:00');
+  return Math.max(0, Math.round((d2 - d1) / 86400000));
+}
+
+function calcAging() {
+  const ini = document.getElementById('fDataInicio').value;
+  const ven = document.getElementById('fVencimento').value;
+  const agingField = document.getElementById('fAging');
+  const vencField  = document.getElementById('fVencimento');
+  const inicioField = document.getElementById('fDataInicio');
+
+  // Validate: inicio must be before vencimento
+  if (ini && ven && ini >= ven) {
+    vencField.setCustomValidity('O vencimento deve ser posterior à data início.');
+    inicioField.setCustomValidity('A data início deve ser anterior ao vencimento.');
+    agingField.value = '⚠ Data início deve ser anterior ao vencimento';
+    agingField.style.color = '#dc2626';
+    return;
+  } else {
+    vencField.setCustomValidity('');
+    inicioField.setCustomValidity('');
+    agingField.style.color = 'var(--muted)';
+  }
+
+  if (ini && ven) {
+    const days = calcAgingValue();
+    agingField.value = days + 'd';
+    agingField.style.color = '#1a1d23';
+    agingField.style.fontWeight = '700';
+  } else {
+    agingField.value = '';
+  }
+}
+
+// ── Auto-fill head photo from heads store ──
+function autoFillHeadPhoto() {
+  if (tempHeadB64 !== null) return; // user already uploaded/cleared manually
+  const nome = document.getElementById('fHead').value.trim().toLowerCase();
+  if (!nome) return;
+  const match = heads.find(h => h.nome.trim().toLowerCase() === nome && h.foto);
+  if (match) { applyImg('head', match.foto); tempHeadB64 = match.foto; }
+}
+function rebuildHeadDatalist() {
+  const dl = document.getElementById('headDatalist');
+  if (!dl) return;
+  dl.innerHTML = heads.map(h => `<option value="${h.nome}">`).join('');
+}
+
+// ── Auto-fill logo from existing client ──
+function autoFillClienteLogo() {
+  if (tempLogoB64 !== null) return; // user already uploaded/cleared manually
+
+  const nome = document.getElementById('fCliente').value.trim().toLowerCase();
+  if (!nome) return;
+
+  // 1. Check clientes settings store first
+  const fromStore = clientes.find(c => c.nome.trim().toLowerCase() === nome && c.logo);
+  if (fromStore) { applyImg('logo', fromStore.logo); tempLogoB64 = fromStore.logo; return; }
+
+  // 2. Fall back to existing items with same client name
+  const match = items.find(it =>
+    it.cliente.trim().toLowerCase() === nome && it.logoB64
+  );
+  if (match) {
+    applyImg('logo', match.logoB64);
+    tempLogoB64 = match.logoB64;
+  }
+}
+
+// ── Known logo fallbacks ──
+const KNOWN_LOGOS = {
+  'bradesco saude':    'https://logo.clearbit.com/bradescosaude.com.br',
+  'bradesco saúde':    'https://logo.clearbit.com/bradescosaude.com.br',
+  'bradesco vida':     'https://logo.clearbit.com/bradesco.com.br',
+  'bradesco vida e previdencia': 'https://logo.clearbit.com/bradesco.com.br',
+  'bradesco':          'https://logo.clearbit.com/bradesco.com.br',
+  'orizon':            'https://www.orizon.com.br/wp-content/uploads/2021/03/logo-orizon.svg',
+  'unimed':            'https://logo.clearbit.com/unimed.com.br',
+  'sulamerica':        'https://logo.clearbit.com/sulamerica.com.br',
+  'sulamérica':        'https://logo.clearbit.com/sulamerica.com.br',
+  'amil':              'https://logo.clearbit.com/amil.com.br',
+  'hapvida':           'https://logo.clearbit.com/hapvida.com.br',
+  'notre dame':        'https://logo.clearbit.com/notredameintermedica.com.br',
+  'intermedica':       'https://logo.clearbit.com/notredameintermedica.com.br',
+  'golden cross':      'https://logo.clearbit.com/goldencross.com.br',
+  'porto seguro':      'https://logo.clearbit.com/portoseguro.com.br',
+  'geap':              'https://logo.clearbit.com/geap.org.br',
+};
+
+function getLogoSrc(cliente, uploadedB64) {
+  if (uploadedB64) return uploadedB64;
+  const key = cliente.toLowerCase().trim();
+  for (const [k, v] of Object.entries(KNOWN_LOGOS)) {
+    if (key.includes(k) && v) return v;
+  }
+  return `https://logo.clearbit.com/${encodeURIComponent(cliente.toLowerCase().replace(/\s+/g,''))}.com.br`;
+}
+
+// ── Data store ──
+let items = JSON.parse(localStorage.getItem('cx-items') || '[]');
+let editingIndex = null;
+let sortKey = null;   // current sort column key
+let sortDir = 1;      // 1 = asc, -1 = desc
+
+if (items.length === 0) {
+  const past   = d => { const dt = new Date(); dt.setDate(dt.getDate()-d); return dt.toISOString().split('T')[0]; };
+  const future = d => { const dt = new Date(); dt.setDate(dt.getDate()+d); return dt.toISOString().split('T')[0]; };
+  const aging  = (ini, ven) => { if (!ini || !ven) return 0; return Math.max(0, Math.round((new Date(ven+'T00:00:00') - new Date(ini+'T00:00:00')) / 86400000)); };
+  items = [
+    { cliente:'Amafresp',             logoB64:'', problema:'Interrupção do serviço Fature Premium devido problema na implantação de uma nova regra', head:'MS', headB64:'', impacto:82, risco:'Satisfação',  dataInicio:past(24),  vencimento:'',        get aging(){ return aging(this.dataInicio, this.vencimento)||24; } },
+    { cliente:'Bradesco Saúde',        logoB64:'', problema:'Concessão de acessos sistemas Bradesco (problema sistêmico do cliente interno e externo)', head:'RB', headB64:'', impacto:60, risco:'Segurança',   dataInicio:past(13),  vencimento:'',        get aging(){ return aging(this.dataInicio, this.vencimento)||13; } },
+    { cliente:'Orizon',                logoB64:'', problema:'Garantir encontros mensais com o público Sênior das Operadoras', head:'LC', headB64:'', impacto:50, risco:'Imagem',      dataInicio:past(94),  vencimento:past(8),   get aging(){ return aging(this.dataInicio, this.vencimento)||94; } },
+    { cliente:'Bradesco Vida e Prev.', logoB64:'', problema:'Mudança de entrada dos comunicados BPV (vida) para portal Bradesco', head:'LC', headB64:'', impacto:48, risco:'Operacional', dataInicio:past(24),  vencimento:past(5),   get aging(){ return aging(this.dataInicio, this.vencimento)||24; } },
+    { cliente:'Orizon',                logoB64:'', problema:'Publicação e operação assistida do novo autorizador de PBM', head:'LC', headB64:'', impacto:70, risco:'Financeiro',  dataInicio:past(20),  vencimento:past(7),   get aging(){ return aging(this.dataInicio, this.vencimento)||20; } },
+    { cliente:'Life',                  logoB64:'', problema:'Impactos na operação após a migração para a CPA', head:'MS', headB64:'', impacto:42, risco:'Operacional', dataInicio:past(11),  vencimento:future(7), get aging(){ return aging(this.dataInicio, this.vencimento)||11; } },
+  ].map(it => ({ ...it, aging: it.aging }));
+  save();
+}
+
+function save() { localStorage.setItem('cx-items', JSON.stringify(items)); }
+
+// Date badge
+document.getElementById('dateDisplay').textContent =
+  new Date().toLocaleDateString('pt-BR', { weekday:'short', day:'2-digit', month:'short', year:'numeric' });
+
+// ── Sorting ──
+function sortBy(key) {
+  if (sortKey === key) sortDir *= -1;
+  else { sortKey = key; sortDir = 1; }
+  // Update header classes
+  document.querySelectorAll('th.sortable').forEach(th => {
+    th.classList.remove('sort-asc','sort-desc');
+    const icon = th.querySelector('.sort-icon');
+    if (icon) icon.textContent = '⇅';
+  });
+  const th = document.getElementById('th-' + key);
+  if (th) {
+    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+    const icon = th.querySelector('.sort-icon');
+    if (icon) icon.textContent = sortDir === 1 ? '↑' : '↓';
+  }
+  renderTable();
+}
+
+// ── Render ──
+const avatarColors = ['#667eea','#f97316','#10b981','#8b5cf6','#ec4899','#0ea5e9','#dc2626'];
+
+function renderTable() {
+  const fr = document.getElementById('filterRisco').value;
+  const fs = document.getElementById('filterSearch').value.toLowerCase();
+  let filtered = items.filter(it =>
+    (!fr || it.risco === fr) &&
+    (!fs || it.cliente.toLowerCase().includes(fs) || it.problema.toLowerCase().includes(fs))
+  );
+
+  // Apply sort
+  if (sortKey) {
+    filtered = [...filtered].sort((a, b) => {
+      let va = a[sortKey], vb = b[sortKey];
+      if (sortKey === 'impacto' || sortKey === 'aging') {
+        va = Number(va) || 0; vb = Number(vb) || 0;
+        return (va - vb) * sortDir;
+      }
+      if (sortKey === 'vencimento') {
+        va = va || '9999-99-99'; vb = vb || '9999-99-99';
+      }
+      va = (va || '').toString().toLowerCase();
+      vb = (vb || '').toString().toLowerCase();
+      return va < vb ? -sortDir : va > vb ? sortDir : 0;
+    });
+  }
+  document.getElementById('countDisplay').textContent = filtered.length;
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  if (!filtered.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = filtered.map((it, i) => {
+    const ri       = items.indexOf(it);
+    const logoSrc  = getLogoSrc(it.cliente, it.logoB64);
+    const impClass = it.impacto >= 80 ? 'critical' : it.impacto >= 60 ? 'high' : it.impacto >= 40 ? 'medium' : 'low';
+    const riscoStyle = getRiscoStyle(it.risco);
+    const agClass  = it.aging > 60 ? 'red' : it.aging > 20 ? 'orange' : 'green';
+    const color    = avatarColors[ri % avatarColors.length];
+    const initials = (it.head || '??').substring(0, 2).toUpperCase();
+
+    // Vencimento — destaque maior na data
+    let vencHTML = '<span style="color:var(--muted);font-size:11px;">—</span>';
+    if (it.vencimento) {
+      const vd   = new Date(it.vencimento + 'T00:00:00');
+      const now  = new Date(); now.setHours(0,0,0,0);
+      const diff = Math.round((vd - now) / 86400000);
+      const vc   = diff < 0 ? 'overdue' : diff <= 7 ? 'warning' : 'ok';
+      const pct  = vc === 'overdue' ? 100 : vc === 'warning' ? 65 : 35;
+      const diffLabel = diff < 0 ? `${Math.abs(diff)}d atraso` : diff === 0 ? 'Hoje!' : `${diff}d restantes`;
+      const diffColor = diff < 0 ? '#dc2626' : diff <= 7 ? '#f97316' : '#16a34a';
+      vencHTML = `
+        <div class="venc-bar-track"><div class="venc-bar-fill ${vc}" style="width:${pct}%"></div></div>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px;">
+          <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${diffColor};">${vd.toLocaleDateString('pt-BR')}</span>
+        </div>
+        <div style="font-size:10px;color:${diffColor};font-weight:600;margin-top:1px;">${diffLabel}</div>`;
+    }
+
+    // Avatar — foto ou gradiente com iniciais (sem nome, só tooltip)
+    const avatarInner = it.headB64
+      ? `<img src="${it.headB64}" alt="${it.head}" style="width:100%;height:100%;object-fit:cover;">`
+      : initials;
+    const avatarStyle = it.headB64
+      ? `background:#e5e7eb;`
+      : `background:linear-gradient(135deg,${color},${color}aa);`;
+
+    // Link wrapper para o problema (se existir)
+    const probContent = it.link
+      ? `<a href="${it.link}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;display:flex;align-items:flex-start;gap:4px;" title="Abrir ponto no Dynamics">${it.problema} <span style="font-size:10px;color:var(--orizon-green);margin-top:2px;">↗</span></a>`
+      : it.problema;
+
+    // Link wrapper para logo do cliente
+    const logoContent = it.link
+      ? `<a href="${it.link}" target="_blank" rel="noopener noreferrer"><img src="${logoSrc}" alt="${it.cliente}" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><span class="logo-fallback" style="display:none">${it.cliente.substring(0,10)}</span></a>`
+      : `<img src="${logoSrc}" alt="${it.cliente}" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><span class="logo-fallback" style="display:none">${it.cliente.substring(0,10)}</span>`;
+
+    return `
+    <tr style="animation-delay:${i*0.04}s">
+      <td>
+        <div class="logo-wrap" title="${it.cliente || ''}">${logoContent}</div>
+      </td>
+      <td><div class="problema-text">${probContent}</div></td>
+      <td>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div class="avatar" style="${avatarStyle}" title="${it.head || ''}">${avatarInner}</div>
+        </div>
+      </td>
+      <td>
+        <div class="bar-container">
+          <div class="bar-track"><div class="bar-fill ${impClass}" style="width:${it.impacto}%"></div></div>
+        </div>
+      </td>
+      <td><span class="risco-tag" style="${riscoStyle}">${it.risco}</span></td>
+      <td class="venc-cell">${vencHTML}</td>
+      <td class="aging-cell ${agClass}">${it.aging}d</td>
+      <td>
+        <div style="display:flex;gap:4px;">
+          <button class="action-btn move" onclick="moveItem(${ri},-1)" title="Mover para cima" ${ri === 0 ? 'disabled' : ''}>↑</button>
+          <button class="action-btn move" onclick="moveItem(${ri}, 1)" title="Mover para baixo" ${ri === items.length - 1 ? 'disabled' : ''}>↓</button>
+          <button class="action-btn edit" onclick="openModal(${ri})" title="Editar">✏️</button>
+          <button class="action-btn"      onclick="deleteItem(${ri})" title="Remover">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Modal ──
+function openModal(index) {
+  editingIndex = (index !== undefined) ? index : null;
+  tempLogoB64 = null;
+  tempHeadB64 = null;
+  document.getElementById('modalTitle').textContent =
+    editingIndex !== null ? '✏️ Editar Ponto de Atenção' : '➕ Novo Ponto de Atenção';
+
+  if (editingIndex !== null) {
+    const it = items[editingIndex];
+    document.getElementById('fCliente').value    = it.cliente;
+    document.getElementById('fProblema').value   = it.problema;
+    document.getElementById('fHead').value       = it.head;
+    document.getElementById('fImpacto').value    = it.impacto;
+    document.getElementById('fRisco').value      = it.risco;
+    document.getElementById('fDataInicio').value = it.dataInicio || '';
+    document.getElementById('fVencimento').value = it.vencimento || '';
+    document.getElementById('fAging').value      = it.aging ? it.aging + 'd' : '';
+    document.getElementById('fLink').value       = it.link || '';
+    loadImg('logo', it.logoB64 || '');
+    loadImg('head', it.headB64 || '');
+    // Reset to null so auto-fill can trigger if user changes names
+    tempLogoB64 = null;
+    tempHeadB64 = null;
+  } else {
+    ['fCliente','fProblema','fHead','fImpacto','fDataInicio','fVencimento','fAging','fLink'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('fRisco').value = categories[0] || '';
+    loadImg('logo', '');
+    loadImg('head', '');
+  }
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingIndex = null;
+  tempLogoB64 = null;
+  tempHeadB64 = null;
+}
+
+function saveItem() {
+  const prev    = editingIndex !== null ? items[editingIndex] : {};
+  const logoB64 = tempLogoB64 !== null ? tempLogoB64 : (prev.logoB64 || '');
+  const headB64 = tempHeadB64 !== null ? tempHeadB64 : (prev.headB64 || '');
+
+  const item = {
+    cliente:    document.getElementById('fCliente').value.trim(),
+    logoB64,
+    problema:   document.getElementById('fProblema').value.trim(),
+    head:       document.getElementById('fHead').value.trim(),
+    headB64,
+    impacto:    parseInt(document.getElementById('fImpacto').value) || 0,
+    risco:      document.getElementById('fRisco').value,
+    dataInicio: document.getElementById('fDataInicio').value,
+    vencimento: document.getElementById('fVencimento').value,
+    aging:      calcAgingValue(),
+    link:       (function(){ const v = document.getElementById('fLink').value.trim(); return v && !/^https?:\/\//i.test(v) ? 'https://' + v : v; })(),
+  };
+  if (!item.cliente || !item.problema) { alert('Preencha ao menos Cliente e Problema.'); return; }
+  const ini = document.getElementById('fDataInicio').value;
+  const ven = document.getElementById('fVencimento').value;
+  if (ini && ven && ini >= ven) {
+    alert('A data início deve ser anterior ao vencimento do prazo.');
+    return;
+  }
+  if (editingIndex !== null) items[editingIndex] = item;
+  else                       items.push(item);
+  save();
+  closeModal();
+  renderTable();
+}
+
+function deleteItem(index) {
+  if (!confirm('Remover este ponto de atenção?')) return;
+  items.splice(index, 1);
+  save();
+  renderTable();
+}
+
+function moveItem(index, direction) {
+  const target = index + direction;
+  if (target < 0 || target >= items.length) return;
+  [items[index], items[target]] = [items[target], items[index]];
+  save();
+  renderTable();
+}
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById('saveModalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeSaveModal();
+});
+
+// ── Header logo upload ──
+function handleHeaderLogo(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('headerLogoImg');
+    const txt = document.getElementById('headerLogoText');
+    img.src = e.target.result;
+    img.style.filter = 'none';
+    img.style.display = 'block';
+    txt.style.display = 'none';
+    localStorage.setItem('cx-header-logo', e.target.result);
+  };
+  reader.readAsDataURL(file);
+  ev.target.value = '';
+}
+
+// Restore saved header logo
+(function() {
+  const saved = localStorage.getItem('cx-header-logo');
+  if (saved) {
+    const img = document.getElementById('headerLogoImg');
+    if (img) { img.src = saved; img.style.filter = 'none'; }
+  }
+})();
+
+// ── Category management ──
+const DEFAULT_CATEGORIES = ['Satisfação','Segurança','Imagem','Operacional','Financeiro','Jurídico'];
+
+// Preset palette per known category
+const PRESET_STYLES = {
+  'satisfacao':  'background:#fef3c7;color:#92400e;',
+  'seguranca':   'background:#fee2e2;color:#991b1b;',
+  'imagem':      'background:#ede9fe;color:#5b21b6;',
+  'operacional': 'background:#e0f2fe;color:#0369a1;',
+  'financeiro':  'background:#dcfce7;color:#166534;',
+  'juridico':    'background:#fce7f3;color:#9d174d;',
+};
+
+// Auto color palette for new categories
+const AUTO_PALETTES = [
+  'background:#fef9c3;color:#713f12;',
+  'background:#fce7f3;color:#831843;',
+  'background:#dbeafe;color:#1e3a8a;',
+  'background:#d1fae5;color:#064e3b;',
+  'background:#ffe4e6;color:#881337;',
+  'background:#f3e8ff;color:#4c1d95;',
+  'background:#ffedd5;color:#7c2d12;',
+  'background:#cffafe;color:#164e63;',
+  'background:#e0e7ff;color:#312e81;',
+  'background:#f0fdf4;color:#14532d;',
+];
+
+function normalize(s) {
+  return s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/\s+/g,'');
+}
+
+function getRiscoStyle(risco) {
+  const key = normalize(risco);
+  if (PRESET_STYLES[key]) return PRESET_STYLES[key];
+  // Check custom palette assignment
+  const idx = categories.indexOf(risco);
+  if (idx >= 0) {
+    const paletteIdx = (idx - DEFAULT_CATEGORIES.length + AUTO_PALETTES.length * 100) % AUTO_PALETTES.length;
+    return AUTO_PALETTES[paletteIdx >= 0 ? paletteIdx : 0];
+  }
+  return 'background:#f1f5f9;color:#374151;';
+}
+
+let categories = JSON.parse(localStorage.getItem('cx-categories') || 'null') || [...DEFAULT_CATEGORIES];
+
+function saveCategories() { localStorage.setItem('cx-categories', JSON.stringify(categories)); }
+
+function rebuildSelects() {
+  ['filterRisco', 'fRisco'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const cur = sel.value;
+    if (id === 'filterRisco') sel.innerHTML = '<option value="">Todos</option>';
+    else sel.innerHTML = '';
+    categories.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      sel.appendChild(opt);
+    });
+    // restore selection
+    if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
+  });
+}
+
+// ── Settings Page ──
+function openSettings() {
+  document.getElementById('mainPage').classList.add('hidden');
+  document.getElementById('mainPageContent').classList.add('hidden');
+  document.getElementById('settingsPage').classList.add('open');
+  renderSettingsRisco();
+  renderSettingsHeads();
+  renderSettingsClientes();
+}
+function closeSettings() {
+  document.getElementById('settingsPage').classList.remove('open');
+  document.getElementById('mainPage').classList.remove('hidden');
+  document.getElementById('mainPageContent').classList.remove('hidden');
+  rebuildSelects();
+  rebuildHeadDatalist();
+  rebuildClienteSelect();
+  renderTable();
+}
+function switchTab(id) {
+  document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const idx = ['tabRisco','tabHeads','tabClientes'].indexOf(id);
+  document.querySelectorAll('.settings-tab')[idx].classList.add('active');
+}
+
+// ── Helpers ──
+function previewSettingsImg(ev, previewId, hiddenId) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const prev = document.getElementById(previewId);
+    prev.src = e.target.result;
+    prev.style.display = 'block';
+    document.getElementById(hiddenId).value = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  ev.target.value = '';
+}
+
+// ── Categorias (Settings) ──
+function renderSettingsRisco() {
+  const list = document.getElementById('sRiscoList');
+  if (!list) return;
+  list.innerHTML = categories.map((c, i) => {
+    const style = getRiscoStyle(c);
+    const isDefault = DEFAULT_CATEGORIES.includes(c);
+    return `<div class="settings-row">
+      <div class="settings-row-info">
+        <span class="risco-tag" style="${style}">${c}</span>
+      </div>
+      ${isDefault
+        ? `<span style="font-size:10px;color:#94a3b8;">padrão</span>`
+        : `<button class="btn-settings-del" onclick="deleteCategorySettings(${i})">✕ Remover</button>`}
+    </div>`;
+  }).join('');
+}
+function addCategorySettings() {
+  const name = document.getElementById('sNewCatName').value.trim();
+  if (!name) return;
+  if (categories.some(c => c.toLowerCase() === name.toLowerCase())) { alert('Essa categoria já existe.'); return; }
+  categories.push(name);
+  saveCategories();
+  renderSettingsRisco();
+  document.getElementById('sNewCatName').value = '';
+}
+function deleteCategorySettings(idx) {
+  const name = categories[idx];
+  if (items.some(it => it.risco === name)) {
+    if (!confirm(`A categoria "${name}" está em uso em ${items.filter(it=>it.risco===name).length} registro(s). Remover mesmo assim?`)) return;
+  }
+  categories.splice(idx, 1);
+  saveCategories();
+  renderSettingsRisco();
+}
+
+// ── Heads data store ──
+let heads = JSON.parse(localStorage.getItem('cx-heads') || '[]');
+function saveHeads() { localStorage.setItem('cx-heads', JSON.stringify(heads)); }
+
+const avatarColorsMap = ['#667eea','#f97316','#10b981','#8b5cf6','#ec4899','#0ea5e9','#dc2626'];
+
+function renderSettingsHeads() {
+  const list = document.getElementById('sHeadList');
+  if (!list) return;
+  list.innerHTML = heads.length === 0
+    ? '<div style="text-align:center;padding:16px 0;font-size:12px;color:var(--muted);">Nenhum head cadastrado ainda.</div>'
+    : heads.map((h, i) => {
+    const color = avatarColorsMap[i % avatarColorsMap.length];
+    const avatarEl = h.foto
+      ? `<img class="settings-row-avatar" src="${h.foto}" alt="${h.nome}">`
+      : `<div class="settings-row-initials" style="background:linear-gradient(135deg,${color},${color}aa);">${h.nome.substring(0,2).toUpperCase()}</div>`;
+    return `<div class="settings-row">
+      <div class="settings-row-info">
+        ${avatarEl}
+        <div>
+          <div class="settings-row-name">${h.nome}</div>
+        </div>
+      </div>
+      <button class="btn-settings-del" onclick="deleteHead(${i})">✕ Remover</button>
+    </div>`;
+  }).join('');
+}
+function addHead() {
+  const nome = document.getElementById('sNewHeadName').value.trim();
+  if (!nome) { alert('Preencha o nome do head.'); return; }
+  if (heads.some(h => h.nome.toLowerCase() === nome.toLowerCase())) { alert('Esse head já existe.'); return; }
+  const foto = document.getElementById('sHeadB64').value || '';
+  heads.push({ nome, foto });
+  saveHeads();
+  renderSettingsHeads();
+  rebuildHeadDatalist();
+  document.getElementById('sNewHeadName').value = '';
+  document.getElementById('sHeadB64').value = '';
+  const prev = document.getElementById('sHeadPreview');
+  prev.src = ''; prev.style.display = 'none';
+}
+function deleteHead(idx) {
+  const nome = heads[idx].nome;
+  if (items.some(it => it.head === nome || it.head === nome.substring(0,2).toUpperCase())) {
+    if (!confirm(`O head "${nome}" está em uso. Remover mesmo assim?`)) return;
+  }
+  heads.splice(idx, 1);
+  saveHeads();
+  renderSettingsHeads();
+  rebuildHeadSelect();
+}
+function rebuildHeadSelect() {
+  const sel = document.getElementById('fHead');
+  if (!sel || sel.tagName !== 'SELECT') return; // still text input, skip
+}
+
+// ── Clientes data store ──
+let clientes = JSON.parse(localStorage.getItem('cx-clientes') || '[]');
+function saveClientes() { localStorage.setItem('cx-clientes', JSON.stringify(clientes)); }
+
+function renderSettingsClientes() {
+  const list = document.getElementById('sClienteList');
+  if (!list) return;
+  list.innerHTML = clientes.length === 0
+    ? '<div style="text-align:center;padding:16px 0;font-size:12px;color:var(--muted);">Nenhum cliente cadastrado ainda.</div>'
+    : clientes.map((c, i) => {
+    const logoEl = c.logo
+      ? `<img class="settings-row-logo" src="${c.logo}" alt="${c.nome}">`
+      : `<div style="width:64px;height:36px;background:#f1f5f9;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0;">${c.nome.substring(0,6)}</div>`;
+    return `<div class="settings-row">
+      <div class="settings-row-info">
+        ${logoEl}
+        <div>
+          <div class="settings-row-name">${c.nome}</div>
+        </div>
+      </div>
+      <button class="btn-settings-del" onclick="deleteCliente(${i})">✕ Remover</button>
+    </div>`;
+  }).join('');
+}
+function addCliente() {
+  const nome = document.getElementById('sNewClienteName').value.trim();
+  if (!nome) { alert('Preencha o nome do cliente.'); return; }
+  if (clientes.some(c => c.nome.toLowerCase() === nome.toLowerCase())) { alert('Esse cliente já existe.'); return; }
+  const logo = document.getElementById('sClienteB64').value || '';
+  clientes.push({ nome, logo });
+  saveClientes();
+  renderSettingsClientes();
+  rebuildClienteSelect();
+  document.getElementById('sNewClienteName').value = '';
+  document.getElementById('sClienteB64').value = '';
+  const prev = document.getElementById('sClientePreview');
+  prev.src = ''; prev.style.display = 'none';
+}
+function deleteCliente(idx) {
+  clientes.splice(idx, 1);
+  saveClientes();
+  renderSettingsClientes();
+  rebuildClienteSelect();
+}
+function rebuildClienteSelect() {
+  // fCliente is a text input; we keep it as text but update the datalist
+  let dl = document.getElementById('clienteDatalist');
+  if (!dl) {
+    dl = document.createElement('datalist');
+    dl.id = 'clienteDatalist';
+    document.body.appendChild(dl);
+    document.getElementById('fCliente').setAttribute('list','clienteDatalist');
+  }
+  dl.innerHTML = clientes.map(c => `<option value="${c.nome}">`).join('');
+}
+
+// Keep old functions for compatibility (called nowhere now but just in case)
+function openCatModal() { openSettings(); }
+function closeCatModal() {}
+function renderCatList() {}
+function addCategory() { addCategorySettings(); }
+function deleteCategory(idx) { deleteCategorySettings(idx); }
+
+document.getElementById('catModalOverlay').addEventListener('click', function(){});
+document.getElementById('newCatName').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') addCategorySettings();
+});
+
+// ── GitHub Config ──
+const GH_USER  = 'andrepvlk2612';
+const GH_REPO  = 'cx_orizon';
+const GH_TOKEN = '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';
+const GH_FILE  = 'dados.json';
+const GH_API   = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`;
+
+// ── Load data from GitHub on startup ──
+async function loadFromGitHub() {
+  try {
+    showSyncStatus('loading');
+    const res = await fetch(GH_API, {
+      headers: { 'Authorization': `token ${GH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (!res.ok) { showSyncStatus('idle'); return; }
+    const json = await res.json();
+    const data = JSON.parse(atob(json.content.replace(/\n/g,'')));
+    if (data.items)      { items      = data.items;      localStorage.setItem('cx-items',      JSON.stringify(items)); }
+    if (data.categories) { categories = data.categories; localStorage.setItem('cx-categories', JSON.stringify(categories)); }
+    if (data.heads)      { heads      = data.heads;      localStorage.setItem('cx-heads',      JSON.stringify(heads)); }
+    if (data.clientes)   { clientes   = data.clientes;   localStorage.setItem('cx-clientes',   JSON.stringify(clientes)); }
+    if (data.headerLogo) { localStorage.setItem('cx-header-logo', data.headerLogo); applyHeaderLogo(data.headerLogo); }
+    rebuildSelects(); rebuildClienteSelect(); rebuildHeadDatalist(); renderTable();
+    showSyncStatus('ok', 'Dados carregados do GitHub');
+  } catch(e) {
+    showSyncStatus('idle');
+    console.warn('Falha ao carregar do GitHub:', e);
+  }
+}
+
+// ── Save data to GitHub ──
+async function saveToGitHub() {
+  try {
+    showSyncStatus('saving');
+
+    const data = {
+      items, categories, heads, clientes,
+      headerLogo: localStorage.getItem('cx-header-logo') || ''
+    };
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+
+    // Get current SHA (needed to update existing file)
+    let sha = null;
+    const getRes = await fetch(GH_API, {
+      headers: { 'Authorization': `token ${GH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (getRes.ok) { const j = await getRes.json(); sha = j.sha; }
+
+    const body = { message: `Atualização - ${new Date().toLocaleString('pt-BR')}`, content };
+    if (sha) body.sha = sha;
+
+    const putRes = await fetch(GH_API, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${GH_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message);
+    }
+    showSyncStatus('ok', 'Salvo no GitHub com sucesso!');
+  } catch(e) {
+    showSyncStatus('error', 'Erro ao salvar: ' + e.message);
+    console.error(e);
+  }
+}
+
+// ── Sync status indicator ──
+function showSyncStatus(state, msg) {
+  const el = document.getElementById('syncStatus');
+  if (!el) return;
+  const icons = { loading: '⏳', saving: '💾', ok: '✅', error: '❌', idle: '' };
+  el.textContent = icons[state] + (msg ? ' ' + msg : '');
+  el.className = 'sync-status sync-' + state;
+  if (state === 'ok') setTimeout(() => { el.textContent = ''; el.className = 'sync-status'; }, 3000);
+}
+
+// ── Button handler ──
+function exportSnapshot() { saveToGitHub(); }
+
+// Init
+rebuildSelects();
+rebuildClienteSelect();
+rebuildHeadDatalist();
+renderTable();
+loadFromGitHub();
+</script>
+</body>
+</html>
