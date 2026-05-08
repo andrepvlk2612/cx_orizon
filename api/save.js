@@ -4,8 +4,7 @@ export default async function handler(req, res) {
   const GH_TOKEN = process.env.GH_TOKEN;
   const GH_API = 'https://api.github.com/repos/andrepvlk2612/cx_orizon/contents/dados.json';
 
-  const decoded = Buffer.from(req.body.content, 'base64').toString('utf8');
-const content = Buffer.from(decoded, 'utf8').toString('base64');
+  const { content, sha } = req.body;
   const body = {
     message: `Atualizacao - ${new Date().toLocaleString('pt-BR')}`,
     content,
