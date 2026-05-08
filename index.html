@@ -1121,6 +1121,39 @@ function previewSettingsImg(ev, previewId, hiddenId) {
   ev.target.value = '';
 }
 
+// Preview para edição inline (avatar circular ou logo retangular)
+function previewEditImg(ev, previewId, hiddenId, shape) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const b64 = e.target.result;
+    const prev = document.getElementById(previewId);
+    if (prev) {
+      // Troca o elemento div por img se necessário
+      if (prev.tagName === 'DIV') {
+        const img = document.createElement('img');
+        img.id = previewId;
+        img.src = b64;
+        img.alt = '';
+        img.style.borderColor = 'var(--orizon-green)';
+        img.style.cursor = 'pointer';
+        if (shape === 'avatar') {
+          img.className = 'settings-row-avatar';
+        } else {
+          img.className = 'settings-row-logo';
+        }
+        prev.parentNode.replaceChild(img, prev);
+      } else {
+        prev.src = b64;
+      }
+    }
+    document.getElementById(hiddenId).value = b64;
+  };
+  reader.readAsDataURL(file);
+  ev.target.value = '';
+}
+
 // ── Categorias (Settings) ──
 function renderSettingsRisco() {
   const list = document.getElementById('sRiscoList');
@@ -1281,55 +1314,9 @@ document.getElementById('newCatName').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') addCategorySettings();
 });
 
-// ── API Routes ──
+// ── API Routes (Vercel serverless — token fica seguro no servidor) ──
 const LOAD_API = '/api/load';
 const SAVE_API = '/api/save';
-const IMG_API  = '/api/image';
-const GH_RAW   = 'https://raw.githubusercontent.com/andrepvlk2612/cx_orizon/main/';
-
-// ── Helpers: encode/decode UTF-8 safe base64 ──
-function toB64(str) {
-  const bytes = new TextEncoder().encode(str);
-  let bin = '';
-  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-  return btoa(bin);
-}
-function fromB64(b64) {
-  const bin = atob(b64.replace(/\n/g, ''));
-  const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
-  return new TextDecoder().decode(bytes);
-}
-
-// ── Image key: slug seguro para nome de arquivo ──
-function imgKey(type, nome) {
-  return 'images/' + type + '-' + nome.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.png';
-}
-
-// ── Upload uma imagem para o GitHub (só se for nova — data:... ) ──
-async function uploadImageIfNeeded(b64data, type, nome) {
-  if (!b64data || !b64data.startsWith('data:')) return b64data; // já é URL ou vazio
-  const key = imgKey(type, nome);
-  const raw = b64data.split(',')[1]; // remove "data:image/...;base64,"
-  // Busca SHA se já existir
-  let sha = null;
-  try {
-    const r = await fetch(IMG_API + '?key=' + encodeURIComponent(key) + '&t=' + Date.now());
-    if (r.ok) { const j = await r.json(); sha = j.sha; }
-  } catch(e) {}
-  // Salva no GitHub
-  const putRes = await fetch(IMG_API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ key, content: raw, sha })
-  });
-  if (!putRes.ok) {
-    console.warn('Falha ao salvar imagem:', key);
-    return b64data; // fallback: mantém base64 local
-  }
-  return GH_RAW + key + '?t=' + Date.now(); // retorna URL pública
-}
 
 // ── Load data from GitHub on startup ──
 async function loadFromGitHub() {
@@ -1338,7 +1325,10 @@ async function loadFromGitHub() {
     const res = await fetch(LOAD_API + '?t=' + Date.now());
     if (!res.ok) { showSyncStatus('idle'); return; }
     const json = await res.json();
-    const data = JSON.parse(fromB64(json.content));
+    const base64 = json.content.replace(/\n/g,'');
+    const binary = atob(base64);
+    const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+    const data = JSON.parse(new TextDecoder().decode(bytes));
     if (data.items)      { items      = data.items;      localStorage.setItem('cx-items',      JSON.stringify(items)); }
     if (data.categories) { categories = data.categories; localStorage.setItem('cx-categories', JSON.stringify(categories)); }
     if (data.heads)      { heads      = data.heads;      localStorage.setItem('cx-heads',      JSON.stringify(heads)); }
@@ -1357,35 +1347,17 @@ async function saveToGitHub() {
   try {
     showSyncStatus('saving');
 
-    // 1. Upload imagens novas de heads
-    for (const h of heads) {
-      if (h.foto && h.foto.startsWith('data:')) {
-        h.foto = await uploadImageIfNeeded(h.foto, 'head', h.nome);
-      }
-    }
-    // 2. Upload imagens novas de clientes
-    for (const c of clientes) {
-      if (c.logo && c.logo.startsWith('data:')) {
-        c.logo = await uploadImageIfNeeded(c.logo, 'cliente', c.nome);
-      }
-    }
-    // 3. Upload imagens novas de items (logoB64 e headB64)
-    for (const it of items) {
-      if (it.logoB64 && it.logoB64.startsWith('data:')) {
-        it.logoB64 = await uploadImageIfNeeded(it.logoB64, 'cliente', it.cliente);
-      }
-      if (it.headB64 && it.headB64.startsWith('data:')) {
-        it.headB64 = await uploadImageIfNeeded(it.headB64, 'head', it.head);
-      }
-    }
-
-    // 4. Salva dados (sem base64 pesado)
     const data = {
       items, categories, heads, clientes,
       headerLogo: localStorage.getItem('cx-header-logo') || ''
     };
-    const content = toB64(JSON.stringify(data, null, 2));
+    const json = JSON.stringify(data, null, 2);
+    const bytes = new TextEncoder().encode(json);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    const content = btoa(binary);
 
+    // Busca SHA atual via rota segura
     let sha = null;
     const getRes = await fetch(LOAD_API + '?t=' + Date.now());
     if (getRes.ok) { const j = await getRes.json(); sha = j.sha; }
@@ -1402,12 +1374,6 @@ async function saveToGitHub() {
       try { msg = JSON.parse(text).message || msg; } catch(e) { msg = text.substring(0, 120); }
       throw new Error(msg);
     }
-
-    // Atualiza localStorage com URLs novas
-    localStorage.setItem('cx-heads',    JSON.stringify(heads));
-    localStorage.setItem('cx-clientes', JSON.stringify(clientes));
-    localStorage.setItem('cx-items',    JSON.stringify(items));
-
     showSyncStatus('ok', 'Salvo no GitHub com sucesso!');
   } catch(e) {
     showSyncStatus('error', 'Erro ao salvar: ' + e.message);
