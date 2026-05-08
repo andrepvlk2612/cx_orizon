@@ -1292,7 +1292,10 @@ async function loadFromGitHub() {
     const res = await fetch(LOAD_API);
     if (!res.ok) { showSyncStatus('idle'); return; }
     const json = await res.json();
-    const data = JSON.parse(atob(json.content.replace(/\n/g,'')));
+    const base64 = json.content.replace(/\n/g,'');
+    const binary = atob(base64);
+    const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+    const data = JSON.parse(new TextDecoder().decode(bytes));
     if (data.items)      { items      = data.items;      localStorage.setItem('cx-items',      JSON.stringify(items)); }
     if (data.categories) { categories = data.categories; localStorage.setItem('cx-categories', JSON.stringify(categories)); }
     if (data.heads)      { heads      = data.heads;      localStorage.setItem('cx-heads',      JSON.stringify(heads)); }
@@ -1315,7 +1318,9 @@ async function saveToGitHub() {
       items, categories, heads, clientes,
       headerLogo: localStorage.getItem('cx-header-logo') || ''
     };
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+    const json = JSON.stringify(data, null, 2);
+    const bytes = new TextEncoder().encode(json);
+    const content = btoa(String.fromCharCode(...bytes));
 
     // Busca SHA atual via rota segura
     let sha = null;
