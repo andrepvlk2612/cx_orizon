@@ -1328,7 +1328,8 @@ async function loadFromGitHub() {
 
     if (data.headerLogo) {
       localStorage.setItem('cx-header-logo', data.headerLogo);
-      applyHeaderLogo(data.headerLogo);
+     if (typeof applyHeaderLogo === 'function') {
+  applyHeaderLogo
     }
 
     // ✅ guarda SHA (controle de versão)
