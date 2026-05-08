@@ -3,7 +3,7 @@ const GITHUB_USER = "andrepvlk2612";
 const GITHUB_REPO = "cx_orizon";
 const FILE_PATH = "dados.json";
  
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, PUT, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -17,7 +17,6 @@ export default async function handler(req, res) {
     Accept: "application/vnd.github+json",
   };
  
-  // GET — carrega os dados
   if (req.method === "GET") {
     const response = await fetch(apiUrl, { headers });
  
@@ -33,11 +32,9 @@ export default async function handler(req, res) {
     return res.status(200).json({ content, sha: data.sha });
   }
  
-  // PUT — salva os dados
   if (req.method === "PUT") {
     const { content, sha } = req.body;
  
-    // Busca o SHA atual se não foi enviado
     let currentSha = sha;
     if (!currentSha) {
       const check = await fetch(apiUrl, { headers });
@@ -73,5 +70,4 @@ export default async function handler(req, res) {
   }
  
   return res.status(405).json({ error: "Método não permitido" });
-}
- 
+};
