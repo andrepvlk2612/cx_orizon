@@ -1289,7 +1289,7 @@ const SAVE_API = '/api/save';
 async function loadFromGitHub() {
   try {
     showSyncStatus('loading');
-    const res = await fetch(LOAD_API);
+    const res = await fetch(LOAD_API + '?t=' + Date.now());
     if (!res.ok) { showSyncStatus('idle'); return; }
     const json = await res.json();
     const base64 = json.content.replace(/\n/g,'');
@@ -1326,7 +1326,7 @@ async function saveToGitHub() {
 
     // Busca SHA atual via rota segura
     let sha = null;
-    const getRes = await fetch(LOAD_API);
+    const getRes = await fetch(LOAD_API + '?t=' + Date.now());
     if (getRes.ok) { const j = await getRes.json(); sha = j.sha; }
 
     const putRes = await fetch(SAVE_API, {
