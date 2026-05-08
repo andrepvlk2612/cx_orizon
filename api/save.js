@@ -24,9 +24,18 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ content: null, sha: null });
     }
  
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Erro ao buscar arquivo" });
+    }
+ 
     const data = await response.json();
+ 
+    if (!data.content) {
+      return res.status(200).json({ content: null, sha: data.sha || null });
+    }
+ 
     const content = JSON.parse(
-      Buffer.from(data.content, "base64").toString("utf-8")
+      Buffer.from(data.content.replace(/\n/g, ""), "base64").toString("utf-8")
     );
  
     return res.status(200).json({ content, sha: data.sha });
