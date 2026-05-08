@@ -3,24 +3,24 @@
     {
       "cliente": "Amafresp",
       "logoB64": "",
-      "problema": "Interrupção do serviço Fature Premium devido problema na implantação de uma nova regra",
+      "problema": "InterrupÃ§Ã£o do serviÃ§o Fature Premium devido problema na implantaÃ§Ã£o de uma nova regra",
       "head": "Daniel",
       "headB64": "",
       "impacto": 82,
-      "risco": "Satisfação",
+      "risco": "SatisfaÃ§Ã£o",
       "dataInicio": "2026-04-14",
       "vencimento": "",
       "aging": 0,
       "link": ""
     },
     {
-      "cliente": "Bradesco Saúde",
+      "cliente": "Bradesco SaÃºde",
       "logoB64": "",
-      "problema": "Concessão de acessos sistemas Bradesco (problema sistêmico do cliente interno e externo)",
+      "problema": "ConcessÃ£o de acessos sistemas Bradesco (problema sistÃªmico do cliente interno e externo)",
       "head": "RB",
       "headB64": "",
       "impacto": 60,
-      "risco": "Segurança",
+      "risco": "SeguranÃ§a",
       "dataInicio": "2026-04-25",
       "vencimento": "",
       "aging": 13
@@ -28,7 +28,7 @@
     {
       "cliente": "Orizon",
       "logoB64": "",
-      "problema": "Garantir encontros mensais com o público Sênior das Operadoras",
+      "problema": "Garantir encontros mensais com o pÃºblico SÃªnior das Operadoras",
       "head": "LC",
       "headB64": "",
       "impacto": 50,
@@ -40,7 +40,7 @@
     {
       "cliente": "Bradesco Vida e Prev.",
       "logoB64": "",
-      "problema": "Mudança de entrada dos comunicados BPV (vida) para portal Bradesco",
+      "problema": "MudanÃ§a de entrada dos comunicados BPV (vida) para portal Bradesco",
       "head": "LC",
       "headB64": "",
       "impacto": 48,
@@ -52,7 +52,7 @@
     {
       "cliente": "Orizon",
       "logoB64": "",
-      "problema": "Publicação e operação assistida do novo autorizador de PBM",
+      "problema": "PublicaÃ§Ã£o e operaÃ§Ã£o assistida do novo autorizador de PBM",
       "head": "LC",
       "headB64": "",
       "impacto": 70,
@@ -64,7 +64,7 @@
     {
       "cliente": "Life",
       "logoB64": "",
-      "problema": "Impactos na operação após a migração para a CPA",
+      "problema": "Impactos na operaÃ§Ã£o apÃ³s a migraÃ§Ã£o para a CPA",
       "head": "MS",
       "headB64": "",
       "impacto": 42,
@@ -75,12 +75,12 @@
     }
   ],
   "categories": [
-    "Satisfação",
-    "Segurança",
+    "SatisfaÃ§Ã£o",
+    "SeguranÃ§a",
     "Imagem",
     "Operacional",
     "Financeiro",
-    "Jurídico"
+    "JurÃ­dico"
   ],
   "heads": [
     {
