@@ -4,25 +4,27 @@
       "cliente": "Amafresp",
       "logoB64": "",
       "problema": "Interrupção do serviço Fature Premium devido problema na implantação de uma nova regra",
-      "head": "MS",
-      "headB64": "",
+      "head": "Daniel",
+      "headB64": "https://raw.githubusercontent.com/andrepvlk2612/cx_orizon/main/images/head-daniel.png?t=1778273511718",
       "impacto": 82,
       "risco": "Satisfação",
       "dataInicio": "2026-04-14",
       "vencimento": "",
-      "aging": 24
+      "aging": 0,
+      "link": ""
     },
     {
       "cliente": "Bradesco Saúde",
       "logoB64": "",
       "problema": "Concessão de acessos sistemas Bradesco (problema sistêmico do cliente interno e externo)",
-      "head": "RB",
-      "headB64": "",
+      "head": "Teste",
+      "headB64": "https://raw.githubusercontent.com/andrepvlk2612/cx_orizon/main/images/head-teste.png?t=1778273514142",
       "impacto": 60,
       "risco": "Segurança",
       "dataInicio": "2026-04-25",
       "vencimento": "",
-      "aging": 13
+      "aging": 0,
+      "link": ""
     },
     {
       "cliente": "Orizon",
