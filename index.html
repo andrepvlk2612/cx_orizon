@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -1327,13 +1328,8 @@ async function loadFromGitHub() {
 
     if (data.headerLogo) {
       localStorage.setItem('cx-header-logo', data.headerLogo);
-     function applyHeaderLogo(base64) {
-  const img = document.getElementById('headerLogo');
-
-  if (img) {
-    img.src = base64;
-  }
-}
+     if (typeof applyHeaderLogo === 'function') {
+  applyHeaderLogo
     }
 
     // ✅ guarda SHA (controle de versão)
