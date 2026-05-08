@@ -1280,199 +1280,79 @@ document.getElementById('catModalOverlay').addEventListener('click', function(){
 document.getElementById('newCatName').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') addCategorySettings();
 });
-// ── API CONFIG ──
-const VERCEL_API = 'https://cx-orizon.vercel.app/api/save';
 
-let currentSha = null;
+// ── GitHub Config ──
+const GH_USER  = 'andrepvlk2612';
+const GH_REPO  = 'cx_orizon';
+const GH_TOKEN = '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';
+const GH_FILE  = 'dados.json';
+const GH_API   = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`;
 
-
-// ── LOAD ──
-async function loadFromGitHub() {
-  try {
-    showSyncStatus('loading');
-
-    const res = await fetch(VERCEL_API);
-    if (!res.ok) {
-      showSyncStatus('idle');
-      return;
-    }
-
-    const json = await res.json();
-    const data = json.content;
-
-    if (!data) {
-      showSyncStatus('idle');
-      return;
-    }
-
-    // ✅ atualiza dados mantendo estrutura existente
-    if (data.items) {
-      items = data.items;
-      localStorage.setItem('cx-items', JSON.stringify(items));
-    }
-
-    if (data.categories) {
-      categories = data.categories;
-      localStorage.setItem('cx-categories', JSON.stringify(categories));
-    }
-
-    if (data.heads) {
-      heads = data.heads;
-      localStorage.setItem('cx-heads', JSON.stringify(heads));
-    }
-
-    if (data.clientes) {
-      clientes = data.clientes;
-      localStorage.setItem('cx-clientes', JSON.stringify(clientes));
-    }
-
-    if (data.headerLogo) {
-      localStorage.setItem('cx-header-logo', data.headerLogo);
-     if (typeof applyHeaderLogo === 'function') {
-  applyHeaderLogo
-    }
-
-    // ✅ guarda SHA (controle de versão)
-    currentSha = json.sha || null;
-
-    rebuildSelects();
-    rebuildClienteSelect();
-    rebuildHeadDatalist();
-    renderTable();
-
-    showSyncStatus('ok', 'Dados carregados');
-
-  } catch (e) {
-    showSyncStatus('error');
-    console.warn('Erro ao carregar:', e);
-  }
-}
-
-
-// ── SAVE ──
-async function saveToGitHub() {
-  try {
-    showSyncStatus('saving');
-
-    const data = {
-      items,
-      categories,
-      heads,
-      clientes,
-      headerLogo: localStorage.getItem('cx-header-logo') || ''
-    };
-
-    const res = await fetch(VERCEL_API, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        content: data,
-        sha: currentSha
-      })
-    });
-
-    const result = await res.json();
-
-    // 🚨 conflito detectado (GitHub SHA)
-    if (!res.ok) {
-
-      if (result.error && result.error.includes('sha')) {
-        showSyncStatus('error', 'Conflito detectado');
-
-        alert('⚠️ Outra pessoa atualizou o painel.\nOs dados serão recarregados.');
-
-        await loadFromGitHub();
-        return;
-      }
-
-      throw new Error(result.error || 'Erro ao salvar');
-    }
-
-    // ✅ atualiza SHA com nova versão
-    currentSha = result.sha;
-
-    showSyncStatus('ok', 'Salvo no GitHub ✅');
-
-  } catch (e) {
-    showSyncStatus('error', e.message);
-    console.error(e);
-  }
-}
-
-
-// ── BOTÃO ──
-function exportSnapshot() {
-  // ✅ Se o modal estiver aberto, salva ele primeiro
-  const modal = document.getElementById('modalOverlay');
-
-  if (modal && modal.classList.contains('open')) {
-    saveItem(); // salva o que você está editando no modal
-  }
-
-  // depois salva no GitHub
-  saveToGitHub();
-}
-
-
-// ── AUTO SYNC ──
-setInterval(() => {
-  loadFromGitHub();
-}, 8000);
-
-
-// ── INIT ──
-loadFromGitHub();
 // ── Load data from GitHub on startup ──
 async function loadFromGitHub() {
   try {
     showSyncStatus('loading');
-    const res = await fetch(VERCEL_API);
+    const res = await fetch(GH_API, {
+      headers: { 'Authorization': `token ${GH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
     if (!res.ok) { showSyncStatus('idle'); return; }
     const json = await res.json();
-    if (!json.content) { showSyncStatus('idle'); return; }
-    const data = json.content;
+    const data = JSON.parse(atob(json.content.replace(/\n/g,'')));
     if (data.items)      { items      = data.items;      localStorage.setItem('cx-items',      JSON.stringify(items)); }
     if (data.categories) { categories = data.categories; localStorage.setItem('cx-categories', JSON.stringify(categories)); }
     if (data.heads)      { heads      = data.heads;      localStorage.setItem('cx-heads',      JSON.stringify(heads)); }
     if (data.clientes)   { clientes   = data.clientes;   localStorage.setItem('cx-clientes',   JSON.stringify(clientes)); }
     if (data.headerLogo) { localStorage.setItem('cx-header-logo', data.headerLogo); applyHeaderLogo(data.headerLogo); }
     rebuildSelects(); rebuildClienteSelect(); rebuildHeadDatalist(); renderTable();
-    showSyncStatus('ok', 'Dados carregados');
+    showSyncStatus('ok', 'Dados carregados do GitHub');
   } catch(e) {
     showSyncStatus('idle');
-    console.warn('Falha ao carregar:', e);
+    console.warn('Falha ao carregar do GitHub:', e);
   }
 }
- 
+
 // ── Save data to GitHub ──
 async function saveToGitHub() {
   try {
     showSyncStatus('saving');
- 
+
     const data = {
       items, categories, heads, clientes,
       headerLogo: localStorage.getItem('cx-header-logo') || ''
     };
- 
-    const res = await fetch(VERCEL_API, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: data })
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+
+    // Get current SHA (needed to update existing file)
+    let sha = null;
+    const getRes = await fetch(GH_API, {
+      headers: { 'Authorization': `token ${GH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
     });
- 
-    const result = await res.json();
- 
-    if (!res.ok) throw new Error(result.error || 'Erro desconhecido');
- 
-    showSyncStatus('ok', 'Salvo com sucesso!');
+    if (getRes.ok) { const j = await getRes.json(); sha = j.sha; }
+
+    const body = { message: `Atualização - ${new Date().toLocaleString('pt-BR')}`, content };
+    if (sha) body.sha = sha;
+
+    const putRes = await fetch(GH_API, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${GH_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message);
+    }
+    showSyncStatus('ok', 'Salvo no GitHub com sucesso!');
   } catch(e) {
     showSyncStatus('error', 'Erro ao salvar: ' + e.message);
     console.error(e);
   }
 }
- 
+
 // ── Sync status indicator ──
 function showSyncStatus(state, msg) {
   const el = document.getElementById('syncStatus');
@@ -1482,9 +1362,6 @@ function showSyncStatus(state, msg) {
   el.className = 'sync-status sync-' + state;
   if (state === 'ok') setTimeout(() => { el.textContent = ''; el.className = 'sync-status'; }, 3000);
 }
- 
-// ── Button handler ──
-function exportSnapshot() { saveToGitHub(); }
 
 // ── Button handler ──
 function exportSnapshot() { saveToGitHub(); }
