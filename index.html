@@ -116,10 +116,10 @@
   /* Modal */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); z-index: 100; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
-  .modal { background: #fff; border-radius: 16px; padding: 24px 28px; width: 800px; max-width: 96vw; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: modalIn 0.25s ease; }
+  .modal { background: #fff; border-radius: 16px; padding: 28px 32px; width: 600px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: modalIn 0.25s ease; }
   @keyframes modalIn { from { transform: scale(0.93); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 16px; color: var(--header-bg); }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 20px; color: var(--header-bg); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .form-field { display: flex; flex-direction: column; gap: 5px; }
   .form-field.full { grid-column: 1 / -1; }
   .form-field label { font-size: 11.5px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
@@ -256,23 +256,6 @@
   .btn-settings-add:hover { background: #00966a; }
   .btn-settings-del { background: #fee2e2; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; color: #dc2626; font-size: 12px; font-weight: 600; white-space: nowrap; transition: background 0.15s; }
   .btn-settings-del:hover { background: #fecaca; }
-  .btn-settings-edit { background: #eff6ff; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; color: #1d4ed8; font-size: 12px; font-weight: 600; white-space: nowrap; transition: background 0.15s; }
-  .btn-settings-edit:hover { background: #dbeafe; }
-
-  /* Edit inline modal */
-  .edit-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); z-index: 300; align-items: center; justify-content: center; }
-  .edit-modal-overlay.open { display: flex; }
-  .edit-modal { background: #fff; border-radius: 16px; padding: 28px 32px; width: 420px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: modalIn 0.2s ease; }
-  .edit-modal h3 { font-size: 16px; font-weight: 700; color: var(--header-bg); margin-bottom: 18px; }
-  .edit-modal .form-field { margin-bottom: 14px; }
-  .edit-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-
-  /* Color picker row */
-  .color-pair { display: flex; gap: 16px; }
-  .color-pair .color-swatch-wrap { display: flex; flex-direction: column; gap: 5px; flex: 1; }
-  .color-pair label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
-  .color-swatch-wrap input[type="color"] { width: 100%; height: 38px; border: 1.5px solid var(--border); border-radius: 8px; padding: 2px 4px; cursor: pointer; background: #f8fafc; }
-  .cat-preview-tag { display: inline-flex; align-items: center; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-top: 10px; transition: all 0.15s; }
   .mini-upload-btn { border: 1.5px dashed var(--border); border-radius: 8px; padding: 6px 12px; font-family: 'Sora',sans-serif; font-size: 12px; color: var(--muted); cursor: pointer; background: #f8fafc; transition: border-color 0.2s; white-space: nowrap; display: inline-block; }
   .mini-upload-btn:hover { border-color: var(--orizon-green); color: var(--orizon-green); }
   .mini-preview { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--orizon-green); display: none; }
@@ -460,93 +443,6 @@
   </div>
 </div>
 
-<!-- EDIT CATEGORY MODAL -->
-<div class="edit-modal-overlay" id="editCatOverlay">
-  <div class="edit-modal">
-    <h3>✏️ Editar Categoria de Risco</h3>
-    <div class="form-field" style="margin-bottom:14px;">
-      <label style="font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px;">Nome</label>
-      <input type="text" id="eCatNome" maxlength="40" oninput="updateCatPreview()"
-             style="font-family:'Sora',sans-serif;font-size:13px;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;background:#f8fafc;color:var(--text);outline:none;width:100%;">
-    </div>
-    <div class="form-field" style="margin-bottom:14px;">
-      <label style="font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px;">Cores</label>
-      <div class="color-pair">
-        <div class="color-swatch-wrap">
-          <label>Fundo</label>
-          <input type="color" id="eCatBg" oninput="updateCatPreview()">
-        </div>
-        <div class="color-swatch-wrap">
-          <label>Texto</label>
-          <input type="color" id="eCatColor" oninput="updateCatPreview()">
-        </div>
-      </div>
-    </div>
-    <div style="margin-bottom:4px;">
-      <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Prévia</label>
-      <div style="margin-top:6px;">
-        <span class="cat-preview-tag" id="eCatPreview">Prévia</span>
-      </div>
-    </div>
-    <div class="edit-modal-actions">
-      <button class="btn-cancel" onclick="closeEditCategory()">Cancelar</button>
-      <button class="btn-save"   onclick="saveEditCategory()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- EDIT HEAD MODAL -->
-<div class="edit-modal-overlay" id="editHeadOverlay">
-  <div class="edit-modal">
-    <h3>✏️ Editar Head</h3>
-    <div class="form-field">
-      <label style="font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Nome</label>
-      <input type="text" id="eHeadNome" maxlength="60" style="font-family:'Sora',sans-serif;font-size:13px;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;background:#f8fafc;color:var(--text);outline:none;width:100%;">
-    </div>
-    <div class="form-field">
-      <label style="font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Foto</label>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-        <img id="eHeadPreview" class="mini-preview" src="" alt="">
-        <div id="eHeadInitials" class="settings-row-initials"></div>
-        <label class="mini-upload-btn" for="eHeadFile">📷 Trocar foto</label>
-        <button type="button" id="eHeadRemoveBtn" onclick="removeEditHeadPhoto()" style="display:none;background:#fee2e2;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;color:#dc2626;font-size:12px;font-weight:600;">✕ Remover</button>
-        <input type="file" id="eHeadFile" accept="image/*" style="display:none;" onchange="previewEditHeadPhoto(event)">
-      </div>
-    </div>
-    <input type="hidden" id="eHeadB64">
-    <div class="edit-modal-actions">
-      <button class="btn-cancel" onclick="closeEditHead()">Cancelar</button>
-      <button class="btn-save" onclick="saveEditHead()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- EDIT CLIENTE MODAL -->
-<div class="edit-modal-overlay" id="editClienteOverlay">
-  <div class="edit-modal">
-    <h3>✏️ Editar Cliente</h3>
-    <div class="form-field">
-      <label style="font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Nome</label>
-      <input type="text" id="eClienteNome" style="font-family:'Sora',sans-serif;font-size:13px;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;background:#f8fafc;color:var(--text);outline:none;width:100%;">
-    </div>
-    <div class="form-field">
-      <label style="font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Logo</label>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-        <img id="eClientePreview" class="mini-preview-logo" src="" alt="">
-        <div id="eClientePlaceholder" style="width:64px;height:36px;background:#f1f5f9;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);"></div>
-        <label class="mini-upload-btn" for="eClienteFile">🖼️ Trocar logo</label>
-        <button type="button" id="eClienteRemoveBtn" onclick="removeEditClienteLogo()" style="display:none;background:#fee2e2;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;color:#dc2626;font-size:12px;font-weight:600;">✕ Remover</button>
-        <input type="file" id="eClienteFile" accept="image/*" style="display:none;" onchange="previewEditClienteLogo(event)">
-      </div>
-    </div>
-    <input type="hidden" id="eClienteB64">
-    <div class="edit-modal-actions">
-      <button class="btn-cancel" onclick="closeEditCliente()">Cancelar</button>
-      <button class="btn-save" onclick="saveEditCliente()">Salvar</button>
-    </div>
-  </div>
-</div>
-
 <!-- mainPage continues: legend + table -->
 <div id="mainPageContent">
 
@@ -580,7 +476,7 @@
     <h2 id="modalTitle">➕ Novo Ponto de Atenção</h2>
     <div class="form-grid">
 
-      <!-- Linha 1: Cliente | Logo | Head nome -->
+      <!-- Row 1: Cliente | Logo | Head -->
       <div class="form-field">
         <label>Cliente</label>
         <input type="text" id="fCliente" placeholder="Ex: Bradesco Saúde" onblur="autoFillClienteLogo()">
@@ -609,10 +505,10 @@
         <datalist id="headDatalist"></datalist>
       </div>
 
-      <!-- Linha 2: Problema (2 cols) | Foto do Head -->
-      <div class="form-field" style="grid-column: span 2;">
+      <!-- Row 2: Problema | Foto do Head -->
+      <div class="form-field two">
         <label>Qual problema queremos resolver?</label>
-        <textarea id="fProblema" placeholder="Descreva o ponto de atenção..." style="min-height:64px;resize:none;"></textarea>
+        <textarea id="fProblema" placeholder="Descreva o ponto de atenção..."></textarea>
       </div>
 
       <div class="form-field">
@@ -632,7 +528,7 @@
                onchange="handleImg(event,'head')">
       </div>
 
-      <!-- Linha 3: Impacto | Risco | Link -->
+      <!-- Row 3: Impacto | Risco | Data Início | Vencimento -->
       <div class="form-field">
         <label>Impacto no Cliente (0–100)</label>
         <input type="number" id="fImpacto" min="0" max="100" placeholder="Ex: 75">
@@ -644,16 +540,11 @@
       </div>
 
       <div class="form-field">
-        <label>Link (opcional)</label>
-        <input type="text" id="fLink" placeholder="Ex: google.com ou https://...">
-      </div>
-
-      <!-- Linha 4: Data início | Vencimento | Aging -->
-      <div class="form-field">
         <label>Data Início</label>
         <input type="date" id="fDataInicio" onchange="calcAging()">
       </div>
 
+      <!-- Row 4: Vencimento | Aging | Link -->
       <div class="form-field">
         <label>Vencimento do Prazo</label>
         <input type="date" id="fVencimento" onchange="calcAging()">
@@ -663,6 +554,11 @@
         <label>Aging (calculado automaticamente)</label>
         <input type="text" id="fAging" readonly placeholder="Preencha as datas acima"
                style="background:#f1f5f9;color:var(--muted);cursor:default;font-family:'DM Mono',monospace;font-weight:700;">
+      </div>
+
+      <div class="form-field">
+        <label>Link (opcional)</label>
+        <input type="text" id="fLink" placeholder="Ex: google.com ou https://...">
       </div>
 
     </div>
@@ -1144,55 +1040,19 @@ function normalize(s) {
   return s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/\s+/g,'');
 }
 
-// categories pode ser array de strings (legado) ou array de {nome, bg, color}
-function catNome(c) { return typeof c === 'string' ? c : c.nome; }
-function catStyle(c) {
-  if (typeof c === 'object' && c.bg && c.color) return `background:${c.bg};color:${c.color};`;
-  // fallback: preset ou auto
-  const key = normalize(catNome(c));
+function getRiscoStyle(risco) {
+  const key = normalize(risco);
   if (PRESET_STYLES[key]) return PRESET_STYLES[key];
-  const idx = categories.findIndex(x => catNome(x) === catNome(c));
+  // Check custom palette assignment
+  const idx = categories.indexOf(risco);
   if (idx >= 0) {
-    const pi = (idx - DEFAULT_CATEGORIES.length + AUTO_PALETTES.length * 100) % AUTO_PALETTES.length;
-    return AUTO_PALETTES[pi >= 0 ? pi : 0];
+    const paletteIdx = (idx - DEFAULT_CATEGORIES.length + AUTO_PALETTES.length * 100) % AUTO_PALETTES.length;
+    return AUTO_PALETTES[paletteIdx >= 0 ? paletteIdx : 0];
   }
   return 'background:#f1f5f9;color:#374151;';
 }
 
-function getRiscoStyle(risco) {
-  const found = categories.find(c => catNome(c) === risco);
-  if (found) return catStyle(found);
-  // fallback para nome não encontrado
-  const key = normalize(risco);
-  if (PRESET_STYLES[key]) return PRESET_STYLES[key];
-  return 'background:#f1f5f9;color:#374151;';
-}
-
-// Extrai bg e color de um style string como "background:#abc;color:#def;"
-function parseStyleColors(style) {
-  const bg    = (style.match(/background:([^;]+)/) || [])[1] || '#f1f5f9';
-  const color = (style.match(/color:([^;]+)/)      || [])[1] || '#374151';
-  return { bg: bg.trim(), color: color.trim() };
-}
-
-let categories = (function() {
-  const raw = JSON.parse(localStorage.getItem('cx-categories') || 'null');
-  if (!raw) return [...DEFAULT_CATEGORIES];
-  // migrar legado: se for array de strings, converter para objetos com cores defaults
-  return raw.map(c => {
-    if (typeof c === 'string') {
-      const style = (function() {
-        const key = normalize(c);
-        if (PRESET_STYLES[key]) return PRESET_STYLES[key];
-        const idx = DEFAULT_CATEGORIES.indexOf(c);
-        return idx >= 0 ? AUTO_PALETTES[idx % AUTO_PALETTES.length] : 'background:#f1f5f9;color:#374151;';
-      })();
-      const { bg, color } = parseStyleColors(style);
-      return { nome: c, bg, color };
-    }
-    return c;
-  });
-})();
+let categories = JSON.parse(localStorage.getItem('cx-categories') || 'null') || [...DEFAULT_CATEGORIES];
 
 function saveCategories() { localStorage.setItem('cx-categories', JSON.stringify(categories)); }
 
@@ -1205,9 +1065,10 @@ function rebuildSelects() {
     else sel.innerHTML = '';
     categories.forEach(c => {
       const opt = document.createElement('option');
-      opt.value = catNome(c); opt.textContent = catNome(c);
+      opt.value = c; opt.textContent = c;
       sel.appendChild(opt);
     });
+    // restore selection
     if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
   });
 }
@@ -1253,76 +1114,34 @@ function previewSettingsImg(ev, previewId, hiddenId) {
   ev.target.value = '';
 }
 
-// Preview para edição inline (avatar circular ou logo retangular)
-function previewEditImg(ev, previewId, hiddenId, shape) {
-  const file = ev.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const b64 = e.target.result;
-    const prev = document.getElementById(previewId);
-    if (prev) {
-      // Troca o elemento div por img se necessário
-      if (prev.tagName === 'DIV') {
-        const img = document.createElement('img');
-        img.id = previewId;
-        img.src = b64;
-        img.alt = '';
-        img.style.borderColor = 'var(--orizon-green)';
-        img.style.cursor = 'pointer';
-        if (shape === 'avatar') {
-          img.className = 'settings-row-avatar';
-        } else {
-          img.className = 'settings-row-logo';
-        }
-        prev.parentNode.replaceChild(img, prev);
-      } else {
-        prev.src = b64;
-      }
-    }
-    document.getElementById(hiddenId).value = b64;
-  };
-  reader.readAsDataURL(file);
-  ev.target.value = '';
-}
-
 // ── Categorias (Settings) ──
 function renderSettingsRisco() {
   const list = document.getElementById('sRiscoList');
   if (!list) return;
   list.innerHTML = categories.map((c, i) => {
-    const style = catStyle(c);
-    const nome  = catNome(c);
-    const isDefault = DEFAULT_CATEGORIES.includes(nome);
+    const style = getRiscoStyle(c);
+    const isDefault = DEFAULT_CATEGORIES.includes(c);
     return `<div class="settings-row">
       <div class="settings-row-info">
-        <span class="risco-tag" style="${style}">${nome}</span>
+        <span class="risco-tag" style="${style}">${c}</span>
       </div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <button class="btn-settings-edit" onclick="openEditCategory(${i})">✏️ Editar</button>
-        ${isDefault
-          ? `<span style="font-size:10px;color:#94a3b8;">padrão</span>`
-          : `<button class="btn-settings-del" onclick="deleteCategorySettings(${i})">✕ Remover</button>`}
-      </div>
+      ${isDefault
+        ? `<span style="font-size:10px;color:#94a3b8;">padrão</span>`
+        : `<button class="btn-settings-del" onclick="deleteCategorySettings(${i})">✕ Remover</button>`}
     </div>`;
   }).join('');
 }
 function addCategorySettings() {
   const name = document.getElementById('sNewCatName').value.trim();
   if (!name) return;
-  if (categories.some(c => catNome(c).toLowerCase() === name.toLowerCase())) { alert('Essa categoria já existe.'); return; }
-  // nova categoria: herda cor do AUTO_PALETTES pelo índice
-  const idx = categories.length;
-  const pi  = (idx - DEFAULT_CATEGORIES.length + AUTO_PALETTES.length * 100) % AUTO_PALETTES.length;
-  const { bg, color } = parseStyleColors(AUTO_PALETTES[pi >= 0 ? pi : 0]);
-  categories.push({ nome: name, bg, color });
+  if (categories.some(c => c.toLowerCase() === name.toLowerCase())) { alert('Essa categoria já existe.'); return; }
+  categories.push(name);
   saveCategories();
   renderSettingsRisco();
-  rebuildSelects();
   document.getElementById('sNewCatName').value = '';
 }
 function deleteCategorySettings(idx) {
-  const name = catNome(categories[idx]);
+  const name = categories[idx];
   if (items.some(it => it.risco === name)) {
     if (!confirm(`A categoria "${name}" está em uso em ${items.filter(it=>it.risco===name).length} registro(s). Remover mesmo assim?`)) return;
   }
@@ -1354,10 +1173,7 @@ function renderSettingsHeads() {
           <div class="settings-row-name">${h.nome}</div>
         </div>
       </div>
-      <div style="display:flex;gap:6px;">
-        <button class="btn-settings-edit" onclick="openEditHead(${i})">✏️ Editar</button>
-        <button class="btn-settings-del" onclick="deleteHead(${i})">✕ Remover</button>
-      </div>
+      <button class="btn-settings-del" onclick="deleteHead(${i})">✕ Remover</button>
     </div>`;
   }).join('');
 }
@@ -1385,126 +1201,6 @@ function deleteHead(idx) {
   renderSettingsHeads();
   rebuildHeadSelect();
 }
-
-// ── Edit Category Modal ──
-let editCatIdx = null;
-function openEditCategory(i) {
-  editCatIdx = i;
-  const c = categories[i];
-  const nome = catNome(c);
-  const { bg, color } = typeof c === 'object' ? c : parseStyleColors(catStyle(c));
-  document.getElementById('eCatNome').value  = nome;
-  document.getElementById('eCatBg').value    = bg.startsWith('#') ? bg : rgbToHex(bg);
-  document.getElementById('eCatColor').value = color.startsWith('#') ? color : rgbToHex(color);
-  updateCatPreview();
-  document.getElementById('editCatOverlay').classList.add('open');
-}
-function closeEditCategory() {
-  document.getElementById('editCatOverlay').classList.remove('open');
-  editCatIdx = null;
-}
-function updateCatPreview() {
-  const nome  = document.getElementById('eCatNome').value || 'Prévia';
-  const bg    = document.getElementById('eCatBg').value;
-  const color = document.getElementById('eCatColor').value;
-  const tag   = document.getElementById('eCatPreview');
-  tag.textContent = nome;
-  tag.style.background = bg;
-  tag.style.color = color;
-}
-function saveEditCategory() {
-  const nome = document.getElementById('eCatNome').value.trim();
-  if (!nome) { alert('Preencha o nome.'); return; }
-  const bg    = document.getElementById('eCatBg').value;
-  const color = document.getElementById('eCatColor').value;
-  const oldNome = catNome(categories[editCatIdx]);
-  // Propaga novo nome em todos os itens que usavam a categoria antiga
-  if (oldNome !== nome) {
-    items.forEach(it => { if (it.risco === oldNome) it.risco = nome; });
-    save();
-  }
-  categories[editCatIdx] = { nome, bg, color };
-  saveCategories();
-  renderSettingsRisco();
-  rebuildSelects();
-  renderTable();
-  closeEditCategory();
-}
-// Converte rgb(...) para #rrggbb se necessário
-function rgbToHex(rgb) {
-  const m = rgb.match(/\d+/g);
-  if (!m || m.length < 3) return '#f1f5f9';
-  return '#' + m.slice(0,3).map(n => parseInt(n).toString(16).padStart(2,'0')).join('');
-}
-
-// ── Edit Head Modal ──
-let editHeadIdx = null;
-function openEditHead(i) {
-  editHeadIdx = i;
-  const h = heads[i];
-  document.getElementById('eHeadNome').value = h.nome;
-  document.getElementById('eHeadB64').value  = h.foto || '';
-  const prev     = document.getElementById('eHeadPreview');
-  const initials = document.getElementById('eHeadInitials');
-  const removeBtn = document.getElementById('eHeadRemoveBtn');
-  if (h.foto) {
-    prev.src = h.foto; prev.style.display = 'block';
-    initials.style.display = 'none';
-    removeBtn.style.display = 'inline-block';
-  } else {
-    prev.style.display = 'none';
-    const color = avatarColorsMap[i % avatarColorsMap.length];
-    initials.style.background = `linear-gradient(135deg,${color},${color}aa)`;
-    initials.textContent = h.nome.substring(0,2).toUpperCase();
-    initials.style.display = 'flex';
-    removeBtn.style.display = 'none';
-  }
-  document.getElementById('editHeadOverlay').classList.add('open');
-}
-function closeEditHead() {
-  document.getElementById('editHeadOverlay').classList.remove('open');
-  editHeadIdx = null;
-}
-function previewEditHeadPhoto(ev) {
-  const file = ev.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const b64 = e.target.result;
-    document.getElementById('eHeadB64').value = b64;
-    const prev = document.getElementById('eHeadPreview');
-    prev.src = b64; prev.style.display = 'block';
-    document.getElementById('eHeadInitials').style.display = 'none';
-    document.getElementById('eHeadRemoveBtn').style.display = 'inline-block';
-  };
-  reader.readAsDataURL(file); ev.target.value = '';
-}
-function removeEditHeadPhoto() {
-  document.getElementById('eHeadB64').value = '';
-  document.getElementById('eHeadPreview').style.display = 'none';
-  document.getElementById('eHeadRemoveBtn').style.display = 'none';
-  const i = editHeadIdx;
-  const nome = document.getElementById('eHeadNome').value || (heads[i] ? heads[i].nome : '?');
-  const color = avatarColorsMap[i % avatarColorsMap.length];
-  const initials = document.getElementById('eHeadInitials');
-  initials.textContent = nome.substring(0,2).toUpperCase();
-  initials.style.background = `linear-gradient(135deg,${color},${color}aa)`;
-  initials.style.display = 'flex';
-}
-function saveEditHead() {
-  const nome = document.getElementById('eHeadNome').value.trim();
-  if (!nome) { alert('Preencha o nome.'); return; }
-  const foto = document.getElementById('eHeadB64').value;
-  const oldNome = heads[editHeadIdx].nome;
-  // Update items that referenced old name
-  items.forEach(it => { if (it.head === oldNome) it.head = nome; });
-  save();
-  heads[editHeadIdx] = { nome, foto };
-  saveHeads();
-  renderSettingsHeads();
-  rebuildHeadDatalist();
-  closeEditHead();
-  renderTable();
-}
 function rebuildHeadSelect() {
   const sel = document.getElementById('fHead');
   if (!sel || sel.tagName !== 'SELECT') return; // still text input, skip
@@ -1530,10 +1226,7 @@ function renderSettingsClientes() {
           <div class="settings-row-name">${c.nome}</div>
         </div>
       </div>
-      <div style="display:flex;gap:6px;">
-        <button class="btn-settings-edit" onclick="openEditCliente(${i})">✏️ Editar</button>
-        <button class="btn-settings-del" onclick="deleteCliente(${i})">✕ Remover</button>
-      </div>
+      <button class="btn-settings-del" onclick="deleteCliente(${i})">✕ Remover</button>
     </div>`;
   }).join('');
 }
@@ -1557,70 +1250,6 @@ function deleteCliente(idx) {
   renderSettingsClientes();
   rebuildClienteSelect();
 }
-
-// ── Edit Cliente Modal ──
-let editClienteIdx = null;
-function openEditCliente(i) {
-  editClienteIdx = i;
-  const c = clientes[i];
-  document.getElementById('eClienteNome').value = c.nome;
-  document.getElementById('eClienteB64').value  = c.logo || '';
-  const prev       = document.getElementById('eClientePreview');
-  const placeholder = document.getElementById('eClientePlaceholder');
-  const removeBtn  = document.getElementById('eClienteRemoveBtn');
-  if (c.logo) {
-    prev.src = c.logo; prev.style.display = 'block';
-    placeholder.style.display = 'none';
-    removeBtn.style.display = 'inline-block';
-  } else {
-    prev.style.display = 'none';
-    placeholder.textContent = c.nome.substring(0,6);
-    placeholder.style.display = 'flex';
-    removeBtn.style.display = 'none';
-  }
-  document.getElementById('editClienteOverlay').classList.add('open');
-}
-function closeEditCliente() {
-  document.getElementById('editClienteOverlay').classList.remove('open');
-  editClienteIdx = null;
-}
-function previewEditClienteLogo(ev) {
-  const file = ev.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const b64 = e.target.result;
-    document.getElementById('eClienteB64').value = b64;
-    const prev = document.getElementById('eClientePreview');
-    prev.src = b64; prev.style.display = 'block';
-    document.getElementById('eClientePlaceholder').style.display = 'none';
-    document.getElementById('eClienteRemoveBtn').style.display = 'inline-block';
-  };
-  reader.readAsDataURL(file); ev.target.value = '';
-}
-function removeEditClienteLogo() {
-  document.getElementById('eClienteB64').value = '';
-  document.getElementById('eClientePreview').style.display = 'none';
-  document.getElementById('eClienteRemoveBtn').style.display = 'none';
-  const nome = document.getElementById('eClienteNome').value || '';
-  const ph = document.getElementById('eClientePlaceholder');
-  ph.textContent = nome.substring(0,6);
-  ph.style.display = 'flex';
-}
-function saveEditCliente() {
-  const nome = document.getElementById('eClienteNome').value.trim();
-  if (!nome) { alert('Preencha o nome.'); return; }
-  const logo = document.getElementById('eClienteB64').value;
-  const oldNome = clientes[editClienteIdx].nome;
-  // Update items that referenced old name
-  items.forEach(it => { if (it.cliente === oldNome) it.cliente = nome; });
-  save();
-  clientes[editClienteIdx] = { nome, logo };
-  saveClientes();
-  renderSettingsClientes();
-  rebuildClienteSelect();
-  closeEditCliente();
-  renderTable();
-}
 function rebuildClienteSelect() {
   // fCliente is a text input; we keep it as text but update the datalist
   let dl = document.getElementById('clienteDatalist');
@@ -1641,9 +1270,6 @@ function addCategory() { addCategorySettings(); }
 function deleteCategory(idx) { deleteCategorySettings(idx); }
 
 document.getElementById('catModalOverlay').addEventListener('click', function(){});
-document.getElementById('editHeadOverlay').addEventListener('click', function(e){ if(e.target===this) closeEditHead(); });
-document.getElementById('editClienteOverlay').addEventListener('click', function(e){ if(e.target===this) closeEditCliente(); });
-document.getElementById('editCatOverlay').addEventListener('click', function(e){ if(e.target===this) closeEditCategory(); });
 document.getElementById('newCatName').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') addCategorySettings();
 });
@@ -1664,18 +1290,7 @@ async function loadFromGitHub() {
     const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
     const data = JSON.parse(new TextDecoder().decode(bytes));
     if (data.items)      { items      = data.items;      localStorage.setItem('cx-items',      JSON.stringify(items)); }
-    if (data.categories) {
-      // normalizar para formato {nome, bg, color}
-      categories = data.categories.map(c => {
-        if (typeof c === 'string') {
-          const style = (() => { const k = normalize(c); return PRESET_STYLES[k] || AUTO_PALETTES[0]; })();
-          const { bg, color } = parseStyleColors(style);
-          return { nome: c, bg, color };
-        }
-        return c;
-      });
-      localStorage.setItem('cx-categories', JSON.stringify(categories));
-    }
+    if (data.categories) { categories = data.categories; localStorage.setItem('cx-categories', JSON.stringify(categories)); }
     if (data.heads)      { heads      = data.heads;      localStorage.setItem('cx-heads',      JSON.stringify(heads)); }
     if (data.clientes)   { clientes   = data.clientes;   localStorage.setItem('cx-clientes',   JSON.stringify(clientes)); }
     if (data.headerLogo) { localStorage.setItem('cx-header-logo', data.headerLogo); applyHeaderLogo(data.headerLogo); }
@@ -1684,6 +1299,8 @@ async function loadFromGitHub() {
   } catch(e) {
     showSyncStatus('idle');
     console.warn('Falha ao carregar do GitHub:', e);
+    // Fallback: renderiza com dados do localStorage mesmo assim
+    rebuildSelects(); rebuildClienteSelect(); rebuildHeadDatalist(); renderTable();
   }
 }
 
@@ -1739,11 +1356,10 @@ function showSyncStatus(state, msg) {
 // ── Button handler ──
 function exportSnapshot() { saveToGitHub(); }
 
-// Init
+// Init — renderTable é chamado dentro de loadFromGitHub após carregar dados do GitHub
 rebuildSelects();
 rebuildClienteSelect();
 rebuildHeadDatalist();
-renderTable();
 loadFromGitHub();
 </script>
 </body>
