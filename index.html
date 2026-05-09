@@ -724,14 +724,41 @@ const KNOWN_LOGOS = {
   'geap':              'https://logo.clearbit.com/geap.org.br',
 };
 
-function getLogoSrc(cliente, uploadedB64) {
-  // 1. Usa o que está no item (URL do GitHub ou base64)
-  if (uploadedB64) return uploadedB64;
-  // 2. Busca no cadastro de clientes pelo nome
+function retryLogo(img, cliente) {
+  // Tenta buscar do cadastro de clientes com URL fresca
   const nomeL = (cliente || '').toLowerCase().trim();
   const cadastro = clientes.find(c => c.nome.toLowerCase().trim() === nomeL);
-  if (cadastro && cadastro.logo) return cadastro.logo;
-  // 3. Logos conhecidos
+  if (cadastro && cadastro.logo) {
+    const url = cadastro.logo.startsWith('https://raw.githubusercontent')
+      ? cadastro.logo.replace(/[?&]t=\d+/, '') + '?t=' + Date.now()
+      : cadastro.logo;
+    if (img.src !== url) { img.src = url; return; }
+  }
+  // Sem logo — mostra fallback de texto
+  img.style.display = 'none';
+  if (img.nextElementSibling) img.nextElementSibling.style.display = 'block';
+}
+
+function getLogoSrc(cliente, uploadedB64) {
+  const nomeL = (cliente || '').toLowerCase().trim();
+  // 1. Sempre prefere o cadastro de clientes (URL mais fresca)
+  const cadastro = clientes.find(c => c.nome.toLowerCase().trim() === nomeL);
+  if (cadastro && cadastro.logo) {
+    const url = cadastro.logo;
+    // Se for URL do GitHub raw, renova o cache-busting
+    if (url.startsWith('https://raw.githubusercontent')) {
+      return url.replace(/\?t=\d+/, '') + '?t=' + Date.now();
+    }
+    return url;
+  }
+  // 2. Fallback: logo salvo no item
+  if (uploadedB64) {
+    if (uploadedB64.startsWith('https://raw.githubusercontent')) {
+      return uploadedB64.replace(/\?t=\d+/, '') + '?t=' + Date.now();
+    }
+    return uploadedB64;
+  }
+  // 3. Logos conhecidos hardcoded
   for (const [k, v] of Object.entries(KNOWN_LOGOS)) {
     if (nomeL.includes(k) && v) return v;
   }
@@ -859,8 +886,8 @@ function renderTable() {
 
     // Link wrapper para logo do cliente
     const logoContent = it.link
-      ? `<a href="${it.link}" target="_blank" rel="noopener noreferrer"><img src="${logoSrc}" alt="${it.cliente}" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><span class="logo-fallback" style="display:none">${it.cliente.substring(0,10)}</span></a>`
-      : `<img src="${logoSrc}" alt="${it.cliente}" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><span class="logo-fallback" style="display:none">${it.cliente.substring(0,10)}</span>`;
+      ? `<a href="${it.link}" target="_blank" rel="noopener noreferrer"><img src="${logoSrc}" alt="${it.cliente}" onerror="retryLogo(this,'${it.cliente}')"><span class="logo-fallback" style="display:none">${it.cliente.substring(0,10)}</span></a>`
+      : `<img src="${logoSrc}" alt="${it.cliente}" onerror="retryLogo(this,'${it.cliente}')"><span class="logo-fallback" style="display:none">${it.cliente.substring(0,10)}</span>`;
 
     return `
     <tr style="animation-delay:${i*0.04}s">
@@ -1302,10 +1329,14 @@ async function loadFromGitHub() {
     // Propaga logos e fotos do cadastro — sempre prefere o cadastro sobre Clearbit ou vazio
     items.forEach(it => {
       const c = clientes.find(cl => cl.nome.toLowerCase().trim() === (it.cliente||'').toLowerCase().trim());
-      if (c && c.logo) it.logoB64 = c.logo; // sobrescreve sempre (URL fresca do GitHub)
+      if (c && c.logo) it.logoB64 = c.logo;
       const h = heads.find(hd => hd.nome.toLowerCase().trim() === (it.head||'').toLowerCase().trim());
       if (h && h.foto) it.headB64 = h.foto;
     });
+    // Persiste tudo atualizado no localStorage — próxima visita já tem logos certos
+    localStorage.setItem('cx-items',    JSON.stringify(items));
+    localStorage.setItem('cx-clientes', JSON.stringify(clientes));
+    localStorage.setItem('cx-heads',    JSON.stringify(heads));
     rebuildSelects(); rebuildClienteSelect(); rebuildHeadDatalist(); renderTable();
     showSyncStatus('ok', 'Dados carregados do GitHub');
   } catch(e) {
