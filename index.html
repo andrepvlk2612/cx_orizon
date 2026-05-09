@@ -725,12 +725,17 @@ const KNOWN_LOGOS = {
 };
 
 function getLogoSrc(cliente, uploadedB64) {
+  // 1. Usa o que está no item (URL do GitHub ou base64)
   if (uploadedB64) return uploadedB64;
-  const key = cliente.toLowerCase().trim();
+  // 2. Busca no cadastro de clientes pelo nome
+  const nomeL = (cliente || '').toLowerCase().trim();
+  const cadastro = clientes.find(c => c.nome.toLowerCase().trim() === nomeL);
+  if (cadastro && cadastro.logo) return cadastro.logo;
+  // 3. Logos conhecidos
   for (const [k, v] of Object.entries(KNOWN_LOGOS)) {
-    if (key.includes(k) && v) return v;
+    if (nomeL.includes(k) && v) return v;
   }
-  return `https://logo.clearbit.com/${encodeURIComponent(cliente.toLowerCase().replace(/\s+/g,''))}.com.br`;
+  return '';
 }
 
 // ── Data store ──
@@ -1294,6 +1299,13 @@ async function loadFromGitHub() {
     if (data.heads)      { heads      = data.heads;      localStorage.setItem('cx-heads',      JSON.stringify(heads)); }
     if (data.clientes)   { clientes   = data.clientes;   localStorage.setItem('cx-clientes',   JSON.stringify(clientes)); }
     if (data.headerLogo) { localStorage.setItem('cx-header-logo', data.headerLogo); applyHeaderLogo(data.headerLogo); }
+    // Propaga logos e fotos do cadastro — sempre prefere o cadastro sobre Clearbit ou vazio
+    items.forEach(it => {
+      const c = clientes.find(cl => cl.nome.toLowerCase().trim() === (it.cliente||'').toLowerCase().trim());
+      if (c && c.logo) it.logoB64 = c.logo; // sobrescreve sempre (URL fresca do GitHub)
+      const h = heads.find(hd => hd.nome.toLowerCase().trim() === (it.head||'').toLowerCase().trim());
+      if (h && h.foto) it.headB64 = h.foto;
+    });
     rebuildSelects(); rebuildClienteSelect(); rebuildHeadDatalist(); renderTable();
     showSyncStatus('ok', 'Dados carregados do GitHub');
   } catch(e) {
