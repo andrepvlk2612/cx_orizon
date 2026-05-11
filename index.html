@@ -19,7 +19,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { height: 100%; }
-  body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--text); min-height: 100%; }
+  body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
   /* Header */
   header { background: var(--header-bg); padding: 18px 36px; display: flex; align-items: center; justify-content: space-between; gap: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.18); }
@@ -115,12 +115,12 @@
   .action-btn:disabled   { opacity: 0.25; cursor: default; pointer-events: none; }
 
   /* Modal */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); z-index: 100; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 20px 0; }
+  .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100%; background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); z-index: 100; align-items: flex-start; justify-content: center; padding: 24px 16px; }
   .modal-overlay.open { display: flex; }
-  .modal { background: #fff; border-radius: 16px; padding: 28px 32px; width: 600px; max-width: 95vw; max-height: calc(100vh - 40px); overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: modalIn 0.25s ease; margin: auto; }
+  .modal { background: #fff; border-radius: 16px; padding: 28px 32px; width: 860px; max-width: 98vw; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: modalIn 0.25s ease; }
   @keyframes modalIn { from { transform: scale(0.93); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 20px; color: var(--header-bg); }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
   .form-field { display: flex; flex-direction: column; gap: 5px; }
   .form-field.full { grid-column: 1 / -1; }
   .form-field label { font-size: 11.5px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
@@ -477,10 +477,55 @@
     <h2 id="modalTitle">➕ Novo Ponto de Atenção</h2>
     <div class="form-grid">
 
-      <!-- Row 1: Cliente | Logo | Head -->
+      <!-- Row 1: Cliente | Head responsável | Impacto -->
       <div class="form-field">
         <label>Cliente</label>
         <input type="text" id="fCliente" placeholder="Ex: Bradesco Saúde" onblur="autoFillClienteLogo()">
+      </div>
+
+      <div class="form-field">
+        <label>Head responsável</label>
+        <input type="text" id="fHead" placeholder="Ex: Ricardo Borges" maxlength="60" list="headDatalist" onblur="autoFillHeadPhoto()">
+        <datalist id="headDatalist"></datalist>
+      </div>
+
+      <div class="form-field">
+        <label>Impacto no Cliente (0–100)</label>
+        <input type="number" id="fImpacto" min="0" max="100" placeholder="Ex: 75">
+      </div>
+
+      <!-- Row 2: Problema (2 cols) | Risco -->
+      <div class="form-field" style="grid-column: 1 / 3;">
+        <label>Qual problema queremos resolver?</label>
+        <textarea id="fProblema" placeholder="Descreva o ponto de atenção..."></textarea>
+      </div>
+
+      <div class="form-field">
+        <label>Risco</label>
+        <select id="fRisco"></select>
+      </div>
+
+      <!-- Row 3: Data Início | Vencimento | Aging -->
+      <div class="form-field">
+        <label>Data Início</label>
+        <input type="date" id="fDataInicio" onchange="calcAging()">
+      </div>
+
+      <div class="form-field">
+        <label>Vencimento do Prazo</label>
+        <input type="date" id="fVencimento" onchange="calcAging()">
+      </div>
+
+      <div class="form-field">
+        <label>Aging (calculado automaticamente)</label>
+        <input type="text" id="fAging" readonly placeholder="Preencha as datas acima"
+               style="background:#f1f5f9;color:var(--muted);cursor:default;font-family:'DM Mono',monospace;font-weight:700;">
+      </div>
+
+      <!-- Row 4: Link | Logo do Cliente | Foto do Head -->
+      <div class="form-field">
+        <label>Link (opcional)</label>
+        <input type="text" id="fLink" placeholder="Ex: google.com ou https://...">
       </div>
 
       <div class="form-field">
@@ -501,18 +546,6 @@
       </div>
 
       <div class="form-field">
-        <label>Head responsável</label>
-        <input type="text" id="fHead" placeholder="Ex: Ricardo Borges" maxlength="60" list="headDatalist" onblur="autoFillHeadPhoto()">
-        <datalist id="headDatalist"></datalist>
-      </div>
-
-      <!-- Row 2: Problema | Foto do Head -->
-      <div class="form-field two">
-        <label>Qual problema queremos resolver?</label>
-        <textarea id="fProblema" placeholder="Descreva o ponto de atenção..."></textarea>
-      </div>
-
-      <div class="form-field">
         <label>Foto do Head</label>
         <div class="img-upload-box head-upload-box" id="headBox"
              onclick="document.getElementById('fHeadFile').click()">
@@ -527,39 +560,6 @@
         </div>
         <input type="file" id="fHeadFile" accept="image/*" style="display:none;"
                onchange="handleImg(event,'head')">
-      </div>
-
-      <!-- Row 3: Impacto | Risco | Data Início | Vencimento -->
-      <div class="form-field">
-        <label>Impacto no Cliente (0–100)</label>
-        <input type="number" id="fImpacto" min="0" max="100" placeholder="Ex: 75">
-      </div>
-
-      <div class="form-field">
-        <label>Risco</label>
-        <select id="fRisco"></select>
-      </div>
-
-      <div class="form-field">
-        <label>Data Início</label>
-        <input type="date" id="fDataInicio" onchange="calcAging()">
-      </div>
-
-      <!-- Row 4: Vencimento | Aging | Link -->
-      <div class="form-field">
-        <label>Vencimento do Prazo</label>
-        <input type="date" id="fVencimento" onchange="calcAging()">
-      </div>
-
-      <div class="form-field">
-        <label>Aging (calculado automaticamente)</label>
-        <input type="text" id="fAging" readonly placeholder="Preencha as datas acima"
-               style="background:#f1f5f9;color:var(--muted);cursor:default;font-family:'DM Mono',monospace;font-weight:700;">
-      </div>
-
-      <div class="form-field">
-        <label>Link (opcional)</label>
-        <input type="text" id="fLink" placeholder="Ex: google.com ou https://...">
       </div>
 
     </div>
@@ -1400,47 +1400,14 @@ function showSyncStatus(state, msg) {
 // ── Button handler ──
 function exportSnapshot() { saveToGitHub(); }
 
-// ── Fix modal position in iframe/embed contexts (ex: Figma Sites) ──
-(function() {
-  const isEmbedded = window.self !== window.top;
-
-  if (isEmbedded) {
-    // Se o scroll acontece fora do iframe, contém o scroll interno
-    // para que position:fixed se ancore corretamente na viewport visível
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'auto';
-    document.body.style.height = '100vh';
-  }
-
-  function fixModalPosition() {
-    const overlay = document.getElementById('modalOverlay');
-    if (!overlay) return;
-    const scrollY = window.scrollY || document.documentElement.scrollTop;
-    const vh = window.innerHeight;
-    overlay.style.top = scrollY + 'px';
-    overlay.style.height = vh + 'px';
-    overlay.style.position = 'absolute';
-  }
-
-  // Intercepta openModal para aplicar fix de posição
-  const _openModal = window.openModal;
-  window.openModal = function(...args) {
-    _openModal(...args);
-    fixModalPosition();
-  };
-
-  // Atualiza posição se a janela for redimensionada com modal aberto
-  window.addEventListener('resize', function() {
-    const overlay = document.getElementById('modalOverlay');
-    if (overlay && overlay.classList.contains('open')) fixModalPosition();
-  });
-
-  // Atualiza posição ao scrollar (cobre o caso de scroll interno)
-  window.addEventListener('scroll', function() {
-    const overlay = document.getElementById('modalOverlay');
-    if (overlay && overlay.classList.contains('open')) fixModalPosition();
-  }, { passive: true });
-})();
+// ── Scroll to top when modal opens (funciona em embed/iframe também) ──
+const _origOpenModal = openModal;
+window.openModal = function(...args) {
+  _origOpenModal(...args);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+};
 
 // Init — renderTable é chamado dentro de loadFromGitHub após carregar dados do GitHub
 rebuildSelects();
