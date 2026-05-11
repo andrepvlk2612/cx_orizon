@@ -30,13 +30,14 @@
       "cliente": "Orizon",
       "logoB64": "",
       "problema": "Garantir encontros mensais com o público Sênior das Operadoras",
-      "head": "LC",
-      "headB64": "",
+      "head": "Daniel",
+      "headB64": "https://raw.githubusercontent.com/andrepvlk2612/cx_orizon/main/images/head-daniel.png?t=1778273511718",
       "impacto": 50,
       "risco": "Imagem",
       "dataInicio": "2026-02-03",
       "vencimento": "2026-04-30",
-      "aging": 86
+      "aging": 86,
+      "link": ""
     },
     {
       "cliente": "Bradesco Vida e Prev.",
