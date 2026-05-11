@@ -218,6 +218,20 @@
     .import-hint { margin: 12px 10px 0; }
   }
 
+  /* ── Proteção de imagens ── */
+  img {
+    -webkit-user-drag: none;
+    user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: none;
+  }
+  /* Reabilita pointer-events nos wrappers clicáveis para não quebrar UX */
+  .orizon-logo-wrap,
+  .img-upload-box,
+  .logo-wrap a,
+  .action-btn { pointer-events: auto; }
+
   /* ── Settings Page ── */
   #settingsPage { display: none; min-height: 100vh; }
   #settingsPage.open { display: block; }
@@ -1453,6 +1467,62 @@ rebuildSelects();
 rebuildClienteSelect();
 rebuildHeadDatalist();
 loadFromGitHub();
+
+// ── Proteção de imagens ──
+(function() {
+  // 1. Bloqueia clique direito globalmente nas imagens
+  document.addEventListener('contextmenu', function(e) {
+    if (e.target.tagName === 'IMG' || e.target.closest('.logo-wrap, .avatar, .orizon-logo-wrap')) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // 2. Bloqueia arrastar imagens
+  document.addEventListener('dragstart', function(e) {
+    if (e.target.tagName === 'IMG') {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // 3. Aplica proteções CSS em todas as imagens (atuais e futuras via MutationObserver)
+  function protectImages() {
+    document.querySelectorAll('img').forEach(img => {
+      if (img.dataset.protected) return;
+      img.dataset.protected = '1';
+      img.setAttribute('draggable', 'false');
+      img.style.pointerEvents = 'none';
+      img.style.userSelect = 'none';
+      img.style.webkitUserSelect = 'none';
+      img.oncontextmenu = () => false;
+      img.ondragstart   = () => false;
+    });
+  }
+  protectImages();
+
+  const obs = new MutationObserver(protectImages);
+  obs.observe(document.body, { childList: true, subtree: true });
+
+  // 4. Substitui src das imagens por object-URL blob para dificultar rastreio via DevTools
+  //    (só para imagens base64 — logos e heads cadastrados)
+  function obfuscateBase64Imgs() {
+    document.querySelectorAll('img[src^="data:"]').forEach(img => {
+      if (img.dataset.obfuscated) return;
+      try {
+        const res  = fetch(img.src).then(r => r.blob()).then(blob => {
+          const url = URL.createObjectURL(blob);
+          img.dataset.obfuscated = '1';
+          img.src = url;
+        });
+      } catch(e) {}
+    });
+  }
+  // Roda após renderização inicial e após cada mutação relevante
+  setTimeout(obfuscateBase64Imgs, 800);
+  const obs2 = new MutationObserver(() => setTimeout(obfuscateBase64Imgs, 200));
+  obs2.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
+})();
 </script>
 </body>
 </html>
