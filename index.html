@@ -1400,6 +1400,48 @@ function showSyncStatus(state, msg) {
 // ── Button handler ──
 function exportSnapshot() { saveToGitHub(); }
 
+// ── Fix modal position in iframe/embed contexts (ex: Figma Sites) ──
+(function() {
+  const isEmbedded = window.self !== window.top;
+
+  if (isEmbedded) {
+    // Se o scroll acontece fora do iframe, contém o scroll interno
+    // para que position:fixed se ancore corretamente na viewport visível
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'auto';
+    document.body.style.height = '100vh';
+  }
+
+  function fixModalPosition() {
+    const overlay = document.getElementById('modalOverlay');
+    if (!overlay) return;
+    const scrollY = window.scrollY || document.documentElement.scrollTop;
+    const vh = window.innerHeight;
+    overlay.style.top = scrollY + 'px';
+    overlay.style.height = vh + 'px';
+    overlay.style.position = 'absolute';
+  }
+
+  // Intercepta openModal para aplicar fix de posição
+  const _openModal = window.openModal;
+  window.openModal = function(...args) {
+    _openModal(...args);
+    fixModalPosition();
+  };
+
+  // Atualiza posição se a janela for redimensionada com modal aberto
+  window.addEventListener('resize', function() {
+    const overlay = document.getElementById('modalOverlay');
+    if (overlay && overlay.classList.contains('open')) fixModalPosition();
+  });
+
+  // Atualiza posição ao scrollar (cobre o caso de scroll interno)
+  window.addEventListener('scroll', function() {
+    const overlay = document.getElementById('modalOverlay');
+    if (overlay && overlay.classList.contains('open')) fixModalPosition();
+  }, { passive: true });
+})();
+
 // Init — renderTable é chamado dentro de loadFromGitHub após carregar dados do GitHub
 rebuildSelects();
 rebuildClienteSelect();
