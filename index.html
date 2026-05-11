@@ -284,7 +284,7 @@
   <div class="header-right">
     <div class="badge-date" id="dateDisplay"></div>
     <span class="sync-status" id="syncStatus"></span>
-    <button class="btn-export" onclick="exportSnapshot()" title="Salvar alterações no GitHub">💾 Salvar</button>
+    <button class="btn-export" onclick="exportSnapshot()" title="Salvar alterações">💾 Salvar</button>
     <button class="btn-add" onclick="openModal()">+ Adicionar</button>
   </div>
 </header>
@@ -1338,10 +1338,10 @@ async function loadFromGitHub() {
     localStorage.setItem('cx-clientes', JSON.stringify(clientes));
     localStorage.setItem('cx-heads',    JSON.stringify(heads));
     rebuildSelects(); rebuildClienteSelect(); rebuildHeadDatalist(); renderTable();
-    showSyncStatus('ok', 'Dados carregados do GitHub');
+    showSyncStatus('ok', 'Dados carregados');
   } catch(e) {
     showSyncStatus('idle');
-    console.warn('Falha ao carregar do GitHub:', e);
+    console.warn('Falha ao carregar:', e);
     // Fallback: renderiza com dados do localStorage mesmo assim
     rebuildSelects(); rebuildClienteSelect(); rebuildHeadDatalist(); renderTable();
   }
@@ -1379,7 +1379,7 @@ async function saveToGitHub() {
       try { msg = JSON.parse(text).message || msg; } catch(e) { msg = text.substring(0, 120); }
       throw new Error(msg);
     }
-    showSyncStatus('ok', 'Salvo no GitHub com sucesso!');
+    showSyncStatus('ok', 'Salvo com sucesso!');
   } catch(e) {
     showSyncStatus('error', 'Erro ao salvar: ' + e.message);
     console.error(e);
