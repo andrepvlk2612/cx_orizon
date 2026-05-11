@@ -75,7 +75,7 @@
 
   /* Avatar */
   .avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0; overflow: hidden; border: 2px solid rgba(255,255,255,0.4); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; image-rendering: auto; -webkit-backface-visibility: hidden; backface-visibility: hidden; transform: translateZ(0); }
 
   /* Problema */
   .problema-text { max-width: 280px; font-size: 12.5px; line-height: 1.5; color: #374151; }
@@ -115,7 +115,7 @@
   .action-btn:disabled   { opacity: 0.25; cursor: default; pointer-events: none; }
 
   /* Modal */
-  .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100%; background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); z-index: 100; align-items: flex-start; justify-content: center; padding: 24px 16px; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); z-index: 100; align-items: center; justify-content: center; padding: 24px 16px; overflow-y: auto; }
   .modal-overlay.open { display: flex; }
   .modal { background: #fff; border-radius: 16px; padding: 28px 32px; width: 860px; max-width: 98vw; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: modalIn 0.25s ease; }
   @keyframes modalIn { from { transform: scale(0.93); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -518,7 +518,7 @@
 
       <div class="form-field">
         <label>Aging (calculado automaticamente)</label>
-        <input type="text" id="fAging" readonly placeholder="Preencha as datas acima"
+        <input type="text" id="fAging" readonly placeholder="Preencha os campos de data"
                style="background:#f1f5f9;color:var(--muted);cursor:default;font-family:'DM Mono',monospace;font-weight:700;">
       </div>
 
@@ -579,7 +579,29 @@ function handleImg(ev, type) {
   const file = ev.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => applyImg(type, e.target.result);
+  reader.onload = e => {
+    if (type === 'head') {
+      // Resample head photos at 2× (104px) for sharp rendering in 52px avatar
+      const img = new Image();
+      img.onload = () => {
+        const SIZE = 104; // 2× for retina
+        const canvas = document.createElement('canvas');
+        canvas.width = SIZE; canvas.height = SIZE;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        // Crop to square (center)
+        const side = Math.min(img.width, img.height);
+        const sx = (img.width  - side) / 2;
+        const sy = (img.height - side) / 2;
+        ctx.drawImage(img, sx, sy, side, side, 0, 0, SIZE, SIZE);
+        applyImg('head', canvas.toDataURL('image/jpeg', 0.92));
+      };
+      img.src = e.target.result;
+    } else {
+      applyImg(type, e.target.result);
+    }
+  };
   reader.readAsDataURL(file);
   ev.target.value = ''; // allow re-selecting same file
 }
@@ -1033,12 +1055,29 @@ function handleHeaderLogo(ev) {
   ev.target.value = '';
 }
 
-// Restore saved header logo
+// Restore saved header logo — applies immediately AND after any native load event
+// so the custom logo always wins over the default SVG on first access.
+function applyHeaderLogo(b64) {
+  if (!b64) return;
+  const img = document.getElementById('headerLogoImg');
+  const txt = document.getElementById('headerLogoText');
+  if (!img) return;
+  img.src = b64;
+  img.style.filter = 'none';
+  img.style.display = 'block';
+  if (txt) txt.style.display = 'none';
+}
 (function() {
   const saved = localStorage.getItem('cx-header-logo');
-  if (saved) {
-    const img = document.getElementById('headerLogoImg');
-    if (img) { img.src = saved; img.style.filter = 'none'; }
+  if (!saved) return;
+  // Apply now (sync)
+  applyHeaderLogo(saved);
+  // Also apply after the default img fires load/error (race condition guard)
+  const img = document.getElementById('headerLogoImg');
+  if (img) {
+    const reapply = () => { if (localStorage.getItem('cx-header-logo')) applyHeaderLogo(localStorage.getItem('cx-header-logo')); };
+    img.addEventListener('load',  reapply, { once: true });
+    img.addEventListener('error', reapply, { once: true });
   }
 })();
 
